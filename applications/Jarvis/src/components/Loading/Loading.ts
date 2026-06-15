@@ -1,7 +1,20 @@
-export function createLoading(): HTMLElement {
-    const element = document.createElement('div')
-    element.className = 'typing-indicator'
-    element.textContent = 'Jarvis is typing...'
+import template from './Loading.html?raw'
+import './Loading.css'
+import { getElement } from '../../utils/getElement'
 
-    return element
+export class Loading {
+    private element: HTMLElement
+
+    constructor() {
+        const wrapper = document.createElement('div')
+        wrapper.innerHTML = template
+
+        const root = getElement<HTMLElement>(wrapper, '[data-root]')
+
+        this.element = root
+    }
+
+    render(): HTMLElement {
+        return this.element
+    }
 }

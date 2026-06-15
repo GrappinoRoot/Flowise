@@ -6,7 +6,7 @@ import { mountComposer } from '../../components/Composer/Composer'
 import { mountSidebar } from '../../components/Sidebar/Sidebar'
 import { getElement } from '../../utils/getElement'
 import { Message } from '../../components/Message/Message'
-import { createLoading } from '../../components/Loading/Loading'
+import { Loading } from '../../components/Loading/Loading'
 import { createEmptyState } from '../../components/EmptyState/EmptyState'
 import { mountNavbar } from '../../components/Navbar/Navbar'
 import { showAuthView } from '../../services/viewManager'
@@ -45,9 +45,9 @@ export function mountChatView(container: HTMLElement) {
 
     function renderLoading(state: ReturnType<typeof getState>) {
         loadingElement.replaceChildren()
-
         if (!state.loading) return
-        loadingElement.appendChild(createLoading())
+        const loading = new Loading()
+        loadingElement.appendChild(loading.render())
     }
 
     function renderMessages(state: ReturnType<typeof getState>) {
