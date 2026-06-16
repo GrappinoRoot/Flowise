@@ -64,3 +64,9 @@ export type ConversationItemProps = {
     title: string
     active: boolean
 }
+
+export type ProfileButtonProps = {
+    email: string
+    avatarUrl?: string
+    onLogout: () => Promise<void>
+}

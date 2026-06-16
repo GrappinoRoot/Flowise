@@ -1,0 +1,35 @@
+.profile-button {
+    position: relative;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+.profile-button__avatar img {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+}
+
+.profile-button__menu {
+    position: absolute;
+    top: 40px;
+    right: 0;
+    background: #1f1f1f;
+    border-radius: 6px;
+    padding: 8px;
+    display: none;
+    flex-direction: column;
+}
+
+.profile-button__menu.open {
+    display: flex;
+}
+
+.profile-button__logout {
+    background: transparent;
+    border: none;
+    color: white;
+    cursor: pointer;
+    padding: 6px 10px;
+}
