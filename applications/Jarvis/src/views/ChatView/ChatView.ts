@@ -4,11 +4,10 @@ import { subscribe } from '../../store/subscribers'
 import { getState } from '../../store/store'
 import { mountComposer } from '../../components/Composer/Composer'
 import { mountSidebar } from '../../components/Sidebar/Sidebar'
-import { getElement } from '../../utils/getElement'
+import { getElement, createEmptyState } from '../../utils/getElement'
 import { Message } from '../../components/Message/Message'
 import { Loading } from '../../components/Loading/Loading'
-import { createEmptyState } from '../../components/EmptyState/EmptyState'
-import { mountNavbar } from '../../components/Navbar/Navbar'
+import { Navbar } from '../../components/Navbar/Navbar'
 import { showAuthView } from '../../services/viewManager'
 import { signOut } from '../../services/authService'
 
@@ -30,7 +29,7 @@ export function mountChatView(container: HTMLElement) {
     mountComposer(composerElement)
     mountSidebar(sidebarElement)
 
-    mountNavbar(navbarElement, {
+    const navbar = new Navbar({
         isAuthenticated: true,
         onNavigateAuth: () => showAuthView(),
         onLogout: async () => {
@@ -38,6 +37,8 @@ export function mountChatView(container: HTMLElement) {
             showAuthView()
         }
     })
+
+    navbarElement.appendChild(navbar.render())
 
     // ----------------------------
     // RENDER HELPERS

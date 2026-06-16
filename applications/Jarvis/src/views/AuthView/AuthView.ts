@@ -1,8 +1,7 @@
 import template from './AuthView.html?raw'
 import './AuthView.css'
-
-import { mountSignInForm } from '../../components/SignInForm/SignInForm'
-import { mountSignUpForm } from '../../components/SignUpForm/SignUpForm'
+import { SignInForm } from '../../components/SignInForm/SignInForm'
+import { SignUpForm } from '../../components/SignUpForm/SignUpForm'
 
 type AuthMode = 'signin' | 'signup'
 
@@ -15,9 +14,13 @@ export function mountAuthView(container: HTMLElement) {
 
     let authMode: AuthMode = 'signin'
 
-    // Funzione per passare alla modalità di accesso
-    const switchToSignIn = () => {
+    function switchToSignIn() {
         authMode = 'signin'
+        render()
+    }
+
+    function switchMode() {
+        authMode = authMode === 'signin' ? 'signup' : 'signin'
         render()
     }
 
@@ -28,20 +31,18 @@ export function mountAuthView(container: HTMLElement) {
             subtitleElement.textContent = 'Sign in to continue'
             switchModeBtn.textContent = 'Create account'
 
-            mountSignInForm(authFormElement)
+            const signInForm = new SignInForm()
+            authFormElement.appendChild(signInForm.render())
         } else {
             subtitleElement.textContent = 'Create your account'
             switchModeBtn.textContent = 'Already have an account'
 
-            // Passa la funzione switchToSignIn al mountSignUpForm
-            mountSignUpForm(authFormElement, switchToSignIn)
+            const signUpForm = new SignUpForm(switchToSignIn)
+            authFormElement.appendChild(signUpForm.render())
         }
     }
 
-    switchModeBtn.addEventListener('click', () => {
-        authMode = authMode === 'signin' ? 'signup' : 'signin'
-        render()
-    })
+    switchModeBtn.addEventListener('click', switchMode)
 
     render()
 }

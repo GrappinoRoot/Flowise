@@ -6,64 +6,93 @@ import { Button } from '../Button/Button'
 import google from '../../assets/google.svg'
 import { getElement } from '../../utils/getElement'
 
-export function mountSignInForm(container: HTMLElement) {
-    container.innerHTML = template
+export class SignInForm {
+    private element: HTMLElement
 
-    const emailInput = getElement<HTMLInputElement>(container, '[data-email]')
-    const passwordInput = getElement<HTMLInputElement>(container, '[data-password]')
-    const loginBtn = getElement<HTMLButtonElement>(container, '[data-login-btn]')
-    const googleContainer = getElement<HTMLElement>(container, '[data-google-btn]')
-    const errorBox = getElement<HTMLDivElement>(container, '[data-error]')
+    private emailInput: HTMLInputElement
+    private passwordInput: HTMLInputElement
+    private loginBtn: HTMLButtonElement
+    private googleContainer: HTMLElement
+    private errorBox: HTMLDivElement
 
-    // const'[data-error]') as HTMLDivElement
+    constructor() {
+        const wrapper = document.createElement('div')
+        wrapper.innerHTML = template
 
-    function showError(message: string) {
-        errorBox.textContent = message
+        this.emailInput = getElement<HTMLInputElement>(wrapper, '[data-email]')
+        this.passwordInput = getElement<HTMLInputElement>(wrapper, '[data-password]')
+        this.loginBtn = getElement<HTMLButtonElement>(wrapper, '[data-login-btn]')
+        this.googleContainer = getElement<HTMLElement>(wrapper, '[data-google-btn]')
+        this.errorBox = getElement<HTMLDivElement>(wrapper, '[data-error]')
+
+        this.bindEvents()
+        this.mountGoogleButton()
+
+        this.element = wrapper.firstElementChild as HTMLElement
     }
 
-    function clearError() {
-        errorBox.textContent = ''
-    }
+    // ----------------------------
+    // EVENTS
+    // ----------------------------
+    private bindEvents(): void {
+        this.loginBtn.addEventListener('click', async () => {
+            this.clearError()
 
-    loginBtn.addEventListener('click', async () => {
-        clearError()
-
-        const { error } = await supabase.auth.signInWithPassword({
-            email: emailInput.value,
-            password: passwordInput.value
-        })
-
-        if (error) {
-            if (error.code === 'invalid_credentials') {
-                showError('Email o password non corretti')
-            } else {
-                showError('Errore durante il login, riprova')
-            }
-            return
-        }
-
-        showChatView()
-    })
-
-    const googleBtn = new Button({
-        label: 'Continue with Google',
-        icon: google,
-        variant: 'secondary',
-        onClick: async () => {
-            const { error } = await supabase.auth.signInWithOAuth({
-                provider: 'google',
-                options: {
-                    redirectTo: window.location.origin
-                }
+            const { error } = await supabase.auth.signInWithPassword({
+                email: this.emailInput.value,
+                password: this.passwordInput.value
             })
 
             if (error) {
-                showError('Errore login Google')
+                if (error.code === 'invalid_credentials') {
+                    this.showError('Email o password non corretti')
+                } else {
+                    this.showError('Errore durante il login, riprova')
+                }
+                return
             }
-        }
-    }).render()
 
-    if (googleContainer) {
-        googleContainer.replaceWith(googleBtn)
+            showChatView()
+        })
+    }
+
+    private mountGoogleButton(): void {
+        const googleBtn = new Button({
+            label: 'Continue with Google',
+            icon: google,
+            variant: 'secondary',
+            onClick: async () => {
+                const { error } = await supabase.auth.signInWithOAuth({
+                    provider: 'google',
+                    options: {
+                        redirectTo: window.location.origin
+                    }
+                })
+
+                if (error) {
+                    this.showError('Errore login Google')
+                }
+            }
+        }).render()
+
+        this.googleContainer.replaceWith(googleBtn)
+    }
+
+    // ----------------------------
+    // ERROR HANDLING
+    // ----------------------------
+    private showError(message: string): void {
+        this.errorBox.textContent = message
+    }
+
+    private clearError(): void {
+        this.errorBox.textContent = ''
+    }
+
+    // ----------------------------
+    // RENDER
+    // ----------------------------
+    public render(): HTMLElement {
+        return this.element
     }
 }

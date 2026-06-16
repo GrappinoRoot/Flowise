@@ -1,40 +1,48 @@
 import './Navbar.css'
 import template from './Navbar.html?raw'
 import type { NavbarProps } from '../../types/chat'
-import { Button } from '../Button/Button' // Importa il componente Button
-import { getElement } from '../../utils/getElement' // Assicurati che getElement sia importato se usato nel template
+import { Button } from '../Button/Button'
+import { getElement } from '../../utils/getElement'
 
-export function mountNavbar(container: HTMLElement, props: NavbarProps) {
-    const wrapper = document.createElement('div')
-    wrapper.innerHTML = template
+export class Navbar {
+    private element: HTMLElement
 
-    const actionsContainer = getElement(wrapper, '[data-actions]')
-    actionsContainer.replaceChildren() // Pulisce i pulsanti esistenti dal template HTML
+    constructor(private props: NavbarProps) {
+        const wrapper = document.createElement('div')
+        wrapper.innerHTML = template
 
-    // Crea i pulsanti usando il componente riutilizzabile
-    const loginBtn = new Button({
-        label: 'Login',
-        variant: 'ghost',
-        onClick: () => props.onNavigateAuth()
-    }).render()
-    const signupBtn = new Button({
-        label: 'Sign up',
-        variant: 'primary',
-        onClick: () => props.onNavigateAuth()
-    }).render()
-    const logoutBtn = new Button({
-        label: 'Logout',
-        variant: 'logout',
-        onClick: () => props.onLogout()
-    }).render()
+        const actionsContainer = getElement<HTMLElement>(wrapper, '[data-actions]')
 
-    // Gestione visibilità basata sull'autenticazione
-    if (props.isAuthenticated) {
-        actionsContainer.appendChild(logoutBtn)
-    } else {
-        actionsContainer.appendChild(loginBtn)
-        actionsContainer.appendChild(signupBtn)
+        actionsContainer.replaceChildren()
+
+        if (props.isAuthenticated) {
+            const logoutBtn = new Button({
+                label: 'Logout',
+                variant: 'logout',
+                onClick: () => this.props.onLogout()
+            })
+
+            actionsContainer.appendChild(logoutBtn.render())
+        } else {
+            const loginBtn = new Button({
+                label: 'Login',
+                variant: 'ghost',
+                onClick: () => this.props.onNavigateAuth()
+            })
+
+            const signupBtn = new Button({
+                label: 'Sign up',
+                variant: 'primary',
+                onClick: () => this.props.onNavigateAuth()
+            })
+
+            actionsContainer.append(loginBtn.render(), signupBtn.render())
+        }
+
+        this.element = wrapper.firstElementChild as HTMLElement
     }
 
-    container.appendChild(wrapper)
+    render(): HTMLElement {
+        return this.element
+    }
 }
