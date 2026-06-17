@@ -5,7 +5,10 @@ import { subscribe } from '../../store/subscribers'
 import { getElement } from '../../utils/getElement'
 import { dispatchStore } from '../../store/store'
 import { Button } from '../../components/Button/Button'
+import { ProfileButton } from '../../components/ProfileButton/ProfileButton'
 import { ConversationItem } from '../../components/ConversationItem/ConversationItem'
+import { showAuthView } from '../../services/viewManager'
+import { signOut } from '../../services/authService'
 import toggleIcon from '../../assets/toggle.svg'
 
 export function mountSidebar(container: HTMLElement) {
@@ -13,20 +16,19 @@ export function mountSidebar(container: HTMLElement) {
 
     let isCollapsed = false
 
+    const conversationsContainer = getElement(container, '[data-conversations]')
+    const toggleContainer = getElement(container, '[data-sidebar-toggle]')
+    const headerContainer = getElement(container, '[data-sidebar-header]')
+    const footerContainer = getElement(container, '[data-sidebar-footer]')
+
     function toggleSidebar() {
         isCollapsed = !isCollapsed
         container.classList.toggle('collapsed', isCollapsed)
     }
 
-    const conversationsContainer = getElement(container, '[data-conversations]')
-    const toggleContainer = getElement<HTMLDivElement>(container, '[data-sidebar-toggle]')
-    const headerContainer = getElement<HTMLDivElement>(container, '[data-sidebar-header]')
-
     function handleNewChat() {
-        const conversationId = crypto.randomUUID()
-
         dispatchStore('CONVERSATION_CREATED', {
-            Id: conversationId,
+            Id: crypto.randomUUID(),
             title: 'New Chat'
         })
     }
@@ -47,39 +49,46 @@ export function mountSidebar(container: HTMLElement) {
     headerContainer.prepend(newChatBtn.render())
     toggleContainer.prepend(toggleBtn.render())
 
-    // Attach listeners once (Event Delegation)
     conversationsContainer.addEventListener('click', (event) => {
-        const target = event.target as HTMLElement
-        const conversationEl = target.closest('[data-id]') as HTMLElement | null
+        const el = (event.target as HTMLElement).closest('[data-id]') as HTMLElement | null
+        if (!el) return
 
-        if (!conversationEl) return
-
-        const conversationId = conversationEl.dataset.id
+        const conversationId = el.dataset.id
         if (!conversationId) return
 
-        dispatchStore('CONVERSATION_SELECTED', {
-            conversationId
-        })
+        dispatchStore('CONVERSATION_SELECTED', { conversationId })
     })
 
     function render() {
         const state = getState()
 
         conversationsContainer.replaceChildren()
-
         for (const conversation of state.conversations) {
-            const item = new ConversationItem({
-                id: conversation.Id,
-                title: conversation.title,
-                active: conversation.Id === state.activeConversationId
+            conversationsContainer.appendChild(
+                new ConversationItem({
+                    id: conversation.Id,
+                    title: conversation.title,
+                    active: conversation.Id === state.activeConversationId
+                }).render()
+            )
+        }
+
+        footerContainer.replaceChildren()
+
+        if (state.user) {
+            const profileButton = new ProfileButton({
+                email: state.user.email,
+                avatarUrl: state.user.avatarUrl,
+                onLogout: async () => {
+                    await signOut()
+                    showAuthView()
+                }
             })
 
-            conversationsContainer.appendChild(item.render())
+            footerContainer.appendChild(profileButton.render())
         }
     }
-    render()
 
-    subscribe(() => {
-        render()
-    })
+    render()
+    subscribe(render)
 }

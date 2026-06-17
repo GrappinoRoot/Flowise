@@ -20,7 +20,10 @@ export function reducer(currentState: AppState, type: ActionType, payload: Actio
             return renameConversation(currentState, payload as ActionPayloadMap['CONVERSATION_RENAMED'])
         case 'CONVERSATION_DELETED':
             return deleteConversation(currentState, payload as ActionPayloadMap['CONVERSATION_DELETED'])
-
+        case 'USER_SET':
+            return { ...currentState, user: (payload as ActionPayloadMap['USER_SET']).user }
+        case 'USER_CLEAR':
+            return { ...currentState, user: null }
         default:
             return currentState
     }

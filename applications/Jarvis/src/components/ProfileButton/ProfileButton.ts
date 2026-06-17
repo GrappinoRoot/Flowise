@@ -1,5 +1,5 @@
-import template from './Jarvis.html?raw'
-import './Jarvis.css'
+import template from './ProfileButton.html?raw'
+import './ProfileButton.css'
 import { getElement } from '../../utils/getElement'
 import { Button } from '../Button/Button'
 import type { ProfileButtonProps } from '../../types/chat'
@@ -19,10 +19,9 @@ export class ProfileButton {
         this.avatarEl = getElement<HTMLImageElement>(root, '[data-avatar]')
         this.logoutEl = getElement<HTMLElement>(root, '[data-logout]')
 
+        this.element = root
         this.avatarEl.src = props.avatarUrl ?? `https://ui-avatars.com/api/?name=${encodeURIComponent(props.email)}`
         this.bindEvents()
-
-        this.element = root
     }
 
     // ---------------

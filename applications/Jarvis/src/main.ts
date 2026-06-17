@@ -4,6 +4,7 @@ import { chatMiddleware } from './middleware/chatMiddleware'
 import { initApp } from './services/initAppService'
 import { initializeViewManager, showAuthView, showChatView } from './services/viewManager'
 import { supabase } from './lib/supabaseClient'
+import { hydrateAuth } from './services/authService'
 
 const appElement = document.querySelector<HTMLElement>('#app')
 
@@ -22,6 +23,7 @@ async function bootstrap() {
     } = await supabase.auth.getSession()
 
     if (session) {
+        await hydrateAuth()
         await initApp()
         showChatView()
     } else {
@@ -33,6 +35,7 @@ async function bootstrap() {
         if (event === 'SIGNED_OUT') {
             showAuthView()
         } else if (event === 'SIGNED_IN' && session) {
+            await hydrateAuth()
             await initApp()
             showChatView()
         }

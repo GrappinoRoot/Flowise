@@ -11,7 +11,9 @@ export const actions: {
     USER_MESSAGE_SUBMITTED: { id: 5, process: (payload) => payload },
     CONVERSATION_RENAMED: { id: 6, process: (payload) => payload },
     CONVERSATION_DELETED: { id: 7, process: (payload) => payload },
-    FLOWISE_CHAT_ID_UPDATED: { id: 8, process: (payload) => payload }
+    FLOWISE_CHAT_ID_UPDATED: { id: 8, process: (payload) => payload },
+    USER_SET: { id: 9, process: (payload) => payload },
+    USER_CLEAR: { id: 10, process: (payload) => payload }
 }
 
 export type ActionPayloadMap = {
@@ -24,6 +26,8 @@ export type ActionPayloadMap = {
     CONVERSATION_RENAMED: { conversationId: string; title: string }
     CONVERSATION_DELETED: { conversationId: string }
     FLOWISE_CHAT_ID_UPDATED: { conversationId: string; flowiseChatId: string }
+    USER_SET: { user: { id: string; email: string; avatarUrl?: string } }
+    USER_CLEAR: void
 }
 
 export type ActionType = keyof ActionPayloadMap

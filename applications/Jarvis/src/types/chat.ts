@@ -17,10 +17,17 @@ export type Conversation = {
     flowiseChatId?: string | null
 }
 
+export type User = {
+    id: string
+    email: string
+    avatarUrl?: string
+}
+
 export type AppState = {
     conversations: Conversation[]
     activeConversationId: string | null
     loading: boolean
+    user: User | null
 }
 
 export type NavbarProps = {

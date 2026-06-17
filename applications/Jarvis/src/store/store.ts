@@ -6,6 +6,7 @@ import { runMiddlewares } from '../middleware/middleware'
 import { actions } from './actions'
 
 let state: AppState = {
+    user: null,
     conversations: [],
     activeConversationId: null,
     loading: false

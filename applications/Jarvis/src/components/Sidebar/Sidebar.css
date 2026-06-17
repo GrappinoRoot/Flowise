@@ -11,10 +11,16 @@
 .sidebar-top {
     display: flex;
     flex-direction: column;
+    gap: 6px;
 }
 
 .sidebar-header {
     padding: 4px;
+}
+
+.sidebar-footer {
+    padding: 4px;
+    background-color: blue;
 }
 
 .sidebar-toggle-container {
