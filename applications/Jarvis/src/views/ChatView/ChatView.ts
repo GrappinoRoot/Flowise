@@ -3,7 +3,7 @@ import './ChatView.css'
 import { subscribe } from '../../store/subscribers'
 import { getState } from '../../store/store'
 import { mountComposer } from '../../components/Composer/Composer'
-import { mountSidebar } from '../../components/Sidebar/Sidebar'
+import { Sidebar } from '../../components/Sidebar/Sidebar'
 import { getElement, createEmptyState } from '../../utils/getElement'
 import { Message } from '../../components/Message/Message'
 import { Loading } from '../../components/Loading/Loading'
@@ -27,7 +27,8 @@ export function mountChatView(container: HTMLElement) {
     // COMPONENTS
     // ----------------------------
     mountComposer(composerElement)
-    mountSidebar(sidebarElement)
+
+    new Sidebar(sidebarElement)
 
     const navbar = new Navbar({
         isAuthenticated: true,

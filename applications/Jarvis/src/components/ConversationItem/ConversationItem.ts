@@ -68,9 +68,14 @@ export class ConversationItem {
                 })
             }
 
-            input.addEventListener('blur', save)
+            input.addEventListener('blur', () => {
+                setTimeout(save, 0)
+            })
             input.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter') save()
+                if (e.key === 'Enter') {
+                    e.preventDefault()
+                    save()
+                }
             })
 
             input.focus()

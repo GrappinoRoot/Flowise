@@ -19,11 +19,11 @@ export class SignInForm {
         const wrapper = document.createElement('div')
         wrapper.innerHTML = template
 
-        this.emailInput = getElement<HTMLInputElement>(wrapper, '[data-email]')
-        this.passwordInput = getElement<HTMLInputElement>(wrapper, '[data-password]')
-        this.loginBtn = getElement<HTMLButtonElement>(wrapper, '[data-login-btn]')
-        this.googleContainer = getElement<HTMLElement>(wrapper, '[data-google-btn]')
-        this.errorBox = getElement<HTMLDivElement>(wrapper, '[data-error]')
+        this.emailInput = getElement(wrapper, '[data-email]')
+        this.passwordInput = getElement(wrapper, '[data-password]')
+        this.loginBtn = getElement(wrapper, '[data-login-btn]')
+        this.googleContainer = getElement(wrapper, '[data-google-btn]')
+        this.errorBox = getElement(wrapper, '[data-error]')
 
         this.bindEvents()
         this.mountGoogleButton()
