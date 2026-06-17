@@ -11,56 +11,58 @@ import { Navbar } from '../../components/Navbar/Navbar'
 import { showAuthView } from '../../services/viewManager'
 import { signOut } from '../../services/authService'
 
-export function mountChatView(container: HTMLElement) {
-    container.innerHTML = template
+export class ChatView {
+    private host: HTMLElement
+    private messagesElement: HTMLElement
+    private composerElement: HTMLElement
+    private loadingElement: HTMLElement
+    private sidebarElement: HTMLElement
+    private navbarElement: HTMLElement
 
-    // ----------------------------
-    // DOM NODES
-    // ----------------------------
-    const messagesElement = getElement(container, '[data-messages]')
-    const composerElement = getElement(container, '[data-composer]')
-    const loadingElement = getElement(container, '[data-loading]')
-    const sidebarElement = getElement(container, '[data-sidebar]')
-    const navbarElement = getElement(container, '[data-navbar]')
+    constructor(host: HTMLElement) {
+        this.host = host
+        this.host.innerHTML = template
 
-    // ----------------------------
-    // COMPONENTS
-    // ----------------------------
-    mountComposer(composerElement)
+        this.messagesElement = getElement(this.host, '[data-messages]')
+        this.composerElement = getElement(this.host, '[data-composer]')
+        this.loadingElement = getElement(this.host, '[data-loading]')
+        this.sidebarElement = getElement(this.host, '[data-sidebar]')
+        this.navbarElement = getElement(this.host, '[data-navbar]')
 
-    new Sidebar(sidebarElement)
+        mountComposer(this.composerElement)
+        new Sidebar(this.sidebarElement)
 
-    const navbar = new Navbar({
-        isAuthenticated: true,
-        onNavigateAuth: () => showAuthView(),
-        onLogout: async () => {
-            await signOut()
-            showAuthView()
-        }
-    })
+        const navbar = new Navbar({
+            isAuthenticated: true,
+            onNavigateAuth: () => showAuthView(),
+            onLogout: async () => {
+                await signOut()
+                showAuthView()
+            }
+        })
 
-    navbarElement.appendChild(navbar.render())
+        this.navbarElement.appendChild(navbar.render())
 
-    // ----------------------------
-    // RENDER HELPERS
-    // ----------------------------
-
-    function renderLoading(state: ReturnType<typeof getState>) {
-        loadingElement.replaceChildren()
-        if (!state.loading) return
-        const loading = new Loading()
-        loadingElement.appendChild(loading.render())
+        this.render()
+        subscribe(() => this.render())
     }
 
-    function renderMessages(state: ReturnType<typeof getState>) {
+    private renderLoading(state: ReturnType<typeof getState>): void {
+        this.loadingElement.replaceChildren()
+        if (!state.loading) return
+        const loading = new Loading()
+        this.loadingElement.appendChild(loading.render())
+    }
+
+    private renderMessages(state: ReturnType<typeof getState>): void {
         const activeConversation = state.activeConversationId
             ? state.conversations.find((c) => c.Id === state.activeConversationId)
             : undefined
 
-        messagesElement.replaceChildren()
+        this.messagesElement.replaceChildren()
 
         if (!activeConversation) {
-            messagesElement.appendChild(createEmptyState())
+            this.messagesElement.appendChild(createEmptyState())
             return
         }
 
@@ -70,28 +72,17 @@ export function mountChatView(container: HTMLElement) {
                 content: msg.content
             })
 
-            messagesElement.appendChild(message.render())
+            this.messagesElement.appendChild(message.render())
         }
     }
 
-    // ----------------------------
-    // MAIN RENDER
-    // ----------------------------
-    function render() {
+    private render(): void {
         const state = getState()
-
-        renderLoading(state)
-        renderMessages(state)
+        this.renderLoading(state)
+        this.renderMessages(state)
     }
+}
 
-    // ----------------------------
-    // INIT
-    // ----------------------------
-    render()
-
-    // NOTA: In un'app reale, subscribe dovrebbe ritornare una funzione di unsubscribe
-    // da chiamare quando la vista viene smontata per evitare memory leak.
-    subscribe(() => {
-        render()
-    })
+export function mountChatView(container: HTMLElement) {
+    new ChatView(container)
 }
