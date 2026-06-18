@@ -1,35 +1,60 @@
+import { create } from 'zustand'
 import type { AppState } from '../types/chat'
 import { reducer } from './reducer'
-import { notify } from './subscribers'
 import type { ActionType, ActionPayloadMap } from './actions'
 import { runMiddlewares } from '../middleware/middleware'
-import { actions } from './actions'
 
-let state: AppState = {
+let subscribers: (() => void)[] = []
+
+export function notify() {
+    subscribers.forEach((cb) => cb())
+}
+
+export function subscribe(cb: () => void) {
+    subscribers.push(cb)
+    return () => {
+        subscribers = subscribers.filter((c) => c != cb)
+    }
+}
+
+// STORE
+export const useAppStore = create<
+    AppState & {
+        dispatchStore: <K extends ActionType>(type: K, payload: ActionPayloadMap[K]) => void
+        setUser: (user: AppState['user']) => void
+    }
+>((set, get) => ({
     user: null,
     conversations: [],
     activeConversationId: null,
-    loading: false
-}
+    loading: false,
+
+    dispatchStore: (type, payload) => {
+        runMiddlewares(type, payload, {
+            dispatch: get().dispatchStore,
+            getState: () => get()
+        })
+
+        const newState = reducer(get(), type, payload)
+        set(newState)
+        notify()
+    },
+
+    setUser: (user) => {
+        set({ user })
+        notify()
+    }
+}))
 
 export function getState(): AppState {
-    return state
+    return useAppStore.getState()
 }
 
 export function setState(newState: AppState) {
-    state = newState
+    useAppStore.setState(newState)
     notify()
 }
 
 export function dispatchStore<K extends ActionType>(type: K, payload: ActionPayloadMap[K]) {
-    runMiddlewares(type, payload, {
-        dispatch: dispatchStore,
-        getState: getState
-    })
-
-    const action = actions[type]
-    const processedPayload = action.process(payload)
-
-    state = reducer(state, type, processedPayload as ActionPayloadMap[ActionType])
-    notify()
+    return useAppStore.getState().dispatchStore(type, payload)
 }

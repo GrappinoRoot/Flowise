@@ -1,4 +1,4 @@
-import.meta.env
+import ky, { HTTPError } from 'ky'
 
 const FLOWISE_BASE_URL = import.meta.env.VITE_FLOWISE_BASE_URL
 const FLOWISE_CHATFLOW_ID = import.meta.env.VITE_FLOWISE_CHATFLOW_ID
@@ -10,24 +10,24 @@ export type FlowisePredictionResponse = {
 }
 
 export async function sendToFlowise(question: string, chatId?: string): Promise<FlowisePredictionResponse> {
-    const response = await fetch(`${FLOWISE_BASE_URL}/api/v1/prediction/${FLOWISE_CHATFLOW_ID}`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-            question,
-            chatId,
-            streaming: false,
-            overrideConfig: {}
-        })
-    })
+    try {
+        const response = await ky
+            .post(`${FLOWISE_BASE_URL}/api/v1/prediction/${FLOWISE_CHATFLOW_ID}`, {
+                json: {
+                    question,
+                    chatId,
+                    streaming: false,
+                    overrideConfig: {}
+                }
+            })
+            .json<FlowisePredictionResponse>()
 
-    if (!response.ok) {
-        const errorText = await response.text()
-
-        throw new Error(`Flowise request failed: ${response.status} ${errorText}`)
+        return response
+    } catch (error: unknown) {
+        if (error instanceof HTTPError) {
+            const errorText = await error.response.text()
+            throw new Error(`Flowise request failed: ${error.response.status} ${errorText}`)
+        }
+        throw error
     }
-
-    return await response.json()
 }

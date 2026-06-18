@@ -1,7 +1,7 @@
 import template from './Sidebar.html?raw'
 import './Sidebar.css'
 import { getState } from '../../store/store'
-import { subscribe } from '../../store/subscribers'
+import { subscribe } from '../../store/store'
 import { getElement } from '../../utils/getElement'
 import { dispatchStore } from '../../store/store'
 import { Button } from '../../components/Button/Button'

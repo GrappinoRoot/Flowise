@@ -1,6 +1,6 @@
 import template from './ChatView.html?raw'
 import './ChatView.css'
-import { subscribe } from '../../store/subscribers'
+import { subscribe } from '../../store/store'
 import { getState } from '../../store/store'
 import { mountComposer } from '../../components/Composer/Composer'
 import { Sidebar } from '../../components/Sidebar/Sidebar'

@@ -32,7 +32,7 @@ export class AuthView {
     }
 
     private render(): void {
-        this.authFormElement.appendChild(new SignUpForm().render())
+        this.authFormElement.innerHTML = ''
 
         if (this.authMode === 'signin') {
             this.subtitleElement.textContent = 'Sign in to continue'
