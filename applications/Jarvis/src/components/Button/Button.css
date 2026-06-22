@@ -1,13 +1,56 @@
 .button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
     padding: 8px 12px;
+    border: none;
     border-radius: 6px;
     cursor: pointer;
+    font-size: inherit;
+    font-family: inherit;
+}
+
+/* ── Varianti ───────────────────────────────────────── */
+.button--primary {
+    background: #3b82f6;
+    color: #fff;
+}
+.button--primary:hover {
+    background: #2563eb;
+}
+
+.button--secondary {
+    background: transparent;
+    color: #cbd5e1;
+    border: 1px solid #334155;
+}
+.button--secondary:hover {
+    background: rgba(255, 255, 255, 0.06);
 }
 
 .button--ghost {
-    background: #3364bf;
+    background: transparent;
+    color: #cbd5e1;
+    border: none;
+}
+.button--ghost:hover {
+    background: rgba(255, 255, 255, 0.08);
 }
 
-.button:hover {
-    background: #f3f4f6;
+.button--logout {
+    background: transparent;
+    color: #ef4444;
+    border: none;
+    width: 100%;
+}
+.button--logout:hover {
+    background: rgba(239, 68, 68, 0.1);
+}
+
+/* ── Disabled ───────────────────────────────────────── */
+.button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
 }

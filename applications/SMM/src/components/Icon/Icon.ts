@@ -1,6 +1,6 @@
 import template from './Icon.html?raw'
 import './Icon.css'
-import { createTemplate } from '../../utils/createTemplate'
+import { createTemplate } from '../utils/createTemplate'
 
 export class AppIcon extends HTMLElement {
     private _initialized = false

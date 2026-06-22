@@ -1,34 +1,39 @@
 import template from './Composer.html?raw'
 import './Composer.css'
 import { dispatchStore } from '../../store/store'
-import { getElement } from '../../utils/getElement'
-import { Button } from '../../components/Button/Button'
+import { createTemplate } from '../../utils/createTemplate'
+import '../Button/Button'
 
-export function mountComposer(container: HTMLElement) {
-    container.innerHTML = template
+export class AppComposer extends HTMLElement {
+    private _initialized = false
 
-    const formElement = getElement<HTMLFormElement>(container, '[data-composer-form]')
-    const inputElement = getElement<HTMLInputElement>(container, '[data-composer-input]')
-    const submitButtonContainer = getElement<HTMLDivElement>(container, '[data-submit-button]')
+    connectedCallback(): void {
+        if (this._initialized) return
+        this._initialized = true
+        this.initialize()
+    }
 
-    const submitButton = new Button({
-        label: 'Invia',
-        type: 'submit',
-        variant: 'primary'
-    })
-    submitButtonContainer.prepend(submitButton.render())
+    private initialize(): void {
+        const content = createTemplate(template)
 
-    formElement.addEventListener('submit', (event) => {
-        event.preventDefault()
+        const formElement = content.querySelector<HTMLFormElement>('[data-composer-form]')
+        const inputElement = content.querySelector<HTMLInputElement>('[data-composer-input]')
 
-        const value = inputElement.value.trim()
+        if (!formElement) throw new Error('Missing [data-composer-form]')
+        if (!inputElement) throw new Error('Missing [data-composer-input]')
 
-        if (!value) return
+        formElement.addEventListener('submit', (event) => {
+            event.preventDefault()
 
-        dispatchStore('USER_MESSAGE_SUBMITTED', {
-            content: value
+            const value = inputElement.value.trim()
+            if (!value) return
+
+            dispatchStore('USER_MESSAGE_SUBMITTED', { content: value })
+            inputElement.value = ''
         })
 
-        inputElement.value = ''
-    })
+        this.appendChild(content)
+    }
 }
+
+customElements.define('app-composer', AppComposer)

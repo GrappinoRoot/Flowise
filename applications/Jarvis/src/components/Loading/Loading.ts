@@ -1,20 +1,25 @@
 import template from './Loading.html?raw'
 import './Loading.css'
-import { getElement } from '../../utils/getElement'
+import { createTemplate } from '../../utils/createTemplate'
 
-export class Loading {
-    private element: HTMLElement
+export class AppLoading extends HTMLElement {
+    private _initialized = false
 
-    constructor() {
-        const wrapper = document.createElement('div')
-        wrapper.innerHTML = template
+    // ------------------------
+    // LIFECYCLE
+    // ------------------------
+    connectedCallback(): void {
+        if (this._initialized) return
+        this._initialized = true
 
-        const root = getElement<HTMLElement>(wrapper, '[data-root]')
+        const content = createTemplate(template)
 
-        this.element = root
-    }
+        if (!content.querySelector('[data-root]')) {
+            throw new Error('Missing [data-root]')
+        }
 
-    render(): HTMLElement {
-        return this.element
+        this.appendChild(content)
     }
 }
+
+customElements.define('app-loading', AppLoading)

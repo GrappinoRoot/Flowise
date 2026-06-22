@@ -1,12 +1,15 @@
-<div class="signup-form">
-    <input data-username type="text" placeholder="Username" />
-    <input data-email type="email" placeholder="Email" />
-    <input data-password type="password" placeholder="Password" />
-    <input data-confirm-password type="password" placeholder="Confirm Password" />
+<template>
+    <div class="signup-form">
+        <input data-username type="text" placeholder="Username" />
+        <input data-email type="email" placeholder="Email" />
+        <input data-password type="password" placeholder="Password" />
+        <input data-confirm-password type="password" placeholder="Confirm Password" />
 
-    <div class="error-message" data-error></div>
+        <div class="error-message" data-error></div>
 
-    <button data-signup-btn class="primary-btn">Create account</button>
-
-    <button data-google-btn></button>
-</div>
+        <app-button data-signup-btn label="Sign up" variant="primary"></app-button>
+        <div data-google-btn>
+            <app-button label="Continue with Google" variant="secondary"></app-button>
+        </div>
+    </div>
+</template>

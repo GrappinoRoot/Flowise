@@ -1,60 +1,65 @@
 import template from './ProfileButton.html?raw'
 import './ProfileButton.css'
-import { getElement } from '../../utils/getElement'
-import { Button } from '../Button/Button'
-import type { ProfileButtonProps } from '../../types/chat'
+import { createTemplate } from '../../utils/createTemplate'
+import '../Button/Button'
 
-export class ProfileButton {
-    private element: HTMLElement
-    private menuEl: HTMLElement
-    private avatarEl: HTMLImageElement
-    private logoutEl: HTMLElement
+export class AppProfileButton extends HTMLElement {
+    private menuEl!: HTMLElement
+    private avatarEl!: HTMLImageElement
+    private _initialized = false
 
-    constructor(private props: ProfileButtonProps) {
-        const wrapper = document.createElement('div')
-        wrapper.innerHTML = template
-
-        const root = getElement<HTMLElement>(wrapper, '[data-root]')
-        this.menuEl = getElement(root, '[data-menu]')
-        this.avatarEl = getElement<HTMLImageElement>(root, '[data-avatar]')
-        this.logoutEl = getElement<HTMLElement>(root, '[data-logout]')
-
-        this.element = root
-        this.avatarEl.src = props.avatarUrl ?? `https://ui-avatars.com/api/?name=${encodeURIComponent(props.email)}`
-        this.bindEvents()
+    // ------------------------
+    // LIFECYCLE
+    // ------------------------
+    connectedCallback(): void {
+        if (this._initialized) return
+        this._initialized = true
+        this.initialize()
     }
 
-    // ---------------
-    // EVENTS
-    // --------------
-    private bindEvents(): void {
-        this.element.addEventListener('click', (e) => {
+    private initialize(): void {
+        const content = createTemplate(template)
+
+        const menuEl = content.querySelector<HTMLElement>('[data-menu]')
+        const avatarEl = content.querySelector<HTMLImageElement>('[data-avatar]')
+        const logoutEl = content.querySelector<HTMLElement>('[data-logout]')
+
+        if (!menuEl) throw new Error('Missing [data-menu]')
+        if (!avatarEl) throw new Error('Missing [data-avatar]')
+        if (!logoutEl) throw new Error('Missing [data-logout]')
+
+        this.menuEl = menuEl
+        this.avatarEl = avatarEl
+
+        logoutEl.addEventListener('click', (e) => {
+            e.stopPropagation()
+            this.dispatchEvent(new CustomEvent('logout', { bubbles: true }))
+        })
+
+        this.addEventListener('click', (e) => {
             e.stopPropagation()
             this.toggleMenu()
         })
 
-        const logoutBtn = new Button({
-            label: 'Logout',
-            variant: 'logout',
-            onClick: async () => {
-                await this.props.onLogout()
-            }
-        })
-
-        this.logoutEl.replaceWith(logoutBtn.render())
+        this.appendChild(content)
     }
 
-    // *********
-    // UI STATE
-    // *********
+    // ------------------------
+    // PUBLIC API
+    // ------------------------
+    /** Aggiorna avatar e fallback quando ChatView passa i dati utente */
+    public setUser(user: { email: string; avatarUrl?: string } | null): void {
+        if (!this.avatarEl) return
+        const email = user?.email ?? ''
+        this.avatarEl.src = user?.avatarUrl ?? `https://ui-avatars.com/api/?name=${encodeURIComponent(email)}`
+    }
+
+    // ------------------------
+    // ACTIONS
+    // ------------------------
     private toggleMenu(): void {
         this.menuEl.classList.toggle('open')
     }
-
-    // *********
-    // Render
-    // *********
-    public render(): HTMLElement {
-        return this.element
-    }
 }
+
+customElements.define('app-profile-button', AppProfileButton)

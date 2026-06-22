@@ -1,5 +1,5 @@
-import { mountAuthView } from '../views/AuthView/AuthView'
-import { mountChatView } from '../views/ChatView/ChatView'
+import '../views/AuthView/AuthView'
+import '../views/ChatView/ChatView'
 
 let rootElement: HTMLElement | null = null
 
@@ -11,12 +11,12 @@ export function showAuthView() {
     if (!rootElement) return
 
     rootElement.innerHTML = ''
-    mountAuthView(rootElement)
+    rootElement.appendChild(document.createElement('app-auth-view'))
 }
 
 export function showChatView() {
     if (!rootElement) return
 
     rootElement.innerHTML = ''
-    mountChatView(rootElement)
+    rootElement.appendChild(document.createElement('app-chat-view'))
 }

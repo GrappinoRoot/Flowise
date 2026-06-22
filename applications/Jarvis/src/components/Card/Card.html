@@ -1,0 +1,14 @@
+<template>
+    <div class="card" data-card>
+        <div class="card__header" data-header>
+            <h3 class="card__title" data-title></h3>
+            <span class="card__badge" data-badge></span>
+        </div>
+        <div class="card__content" data-content>
+            <p class="card__description" data-description></p>
+        </div>
+        <div class="card__footer" data-footer>
+            <slot name="actions"></slot>
+        </div>
+    </div>
+</template>

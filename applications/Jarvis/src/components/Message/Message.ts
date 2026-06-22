@@ -1,30 +1,36 @@
 import template from './Message.html?raw'
 import './Message.css'
-import type { ChatRole } from '../../types/chat'
-import { getElement } from '../../utils/getElement'
+import { createTemplate } from '../../utils/createTemplate'
 
-type MessageProps = {
-    role: ChatRole
-    content: string
+export class AppMessage extends HTMLElement {
+    private _initialized = false
+
+    // ------------------------
+    // LIFECYCLE
+    // ------------------------
+    connectedCallback(): void {
+        if (this._initialized) return
+        this._initialized = true
+        this.initialize()
+    }
+
+    private initialize(): void {
+        const content = createTemplate(template)
+
+        const rootEl = content.querySelector<HTMLElement>('[data-root]')
+        const contentEl = content.querySelector<HTMLSpanElement>('[data-content]')
+
+        if (!rootEl) throw new Error('Missing [data-root]')
+        if (!contentEl) throw new Error('Missing [data-content]')
+
+        this.appendChild(content)
+
+        const role = this.getAttribute('role') ?? ''
+        const messageContent = this.getAttribute('content') ?? ''
+
+        if (role) rootEl.classList.add(role)
+        contentEl.textContent = messageContent
+    }
 }
 
-export class Message {
-    private element: HTMLElement
-
-    constructor(private props: MessageProps) {
-        const wrapper = document.createElement('div')
-        wrapper.innerHTML = template
-
-        const root = getElement<HTMLElement>(wrapper, '[data-root]')
-
-        root.classList.add(this.props.role)
-
-        const contentEL = getElement<HTMLSpanElement>(wrapper, '[data-content]')
-        contentEL.textContent = this.props.content
-
-        this.element = root
-    }
-    render(): HTMLElement {
-        return this.element
-    }
-}
+customElements.define('app-message', AppMessage)

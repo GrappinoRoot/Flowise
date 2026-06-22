@@ -1,30 +1,10 @@
 import './Button.css'
 import template from './Button.html?raw'
-import { createTemplate } from '../../utils/createTemplate'
+import { createTemplate } from '../utils/createTemplate'
 import '../Icon/Icon'
 
 export class AppButton extends HTMLElement {
-    private buttonEl!: HTMLButtonElement
-    private labelEl!: HTMLSpanElement
     private _initialized = false
-
-    // ------------------------
-    // OBSERVED ATTRIBUTES
-    // ------------------------
-    static get observedAttributes(): string[] {
-        return ['disabled', 'label']
-    }
-
-    attributeChangedCallback(name: string, _old: string | null, value: string | null): void {
-        if (!this._initialized) return
-
-        if (name === 'disabled') {
-            this.buttonEl.disabled = value !== null
-        }
-        if (name === 'label' && this.labelEl) {
-            this.labelEl.textContent = value ?? ''
-        }
-    }
 
     // ------------------------
     // LIFECYCLE
@@ -46,9 +26,6 @@ export class AppButton extends HTMLElement {
         if (!labelEl) throw new Error('Missing [data-label]')
         if (!iconEl) throw new Error('Missing [data-icon]')
 
-        this.buttonEl = button
-        this.labelEl = labelEl
-
         labelEl.textContent = this.getAttribute('label') ?? ''
 
         const variant = this.getAttribute('variant')
@@ -57,7 +34,6 @@ export class AppButton extends HTMLElement {
 
         if (variant) button.classList.add(`button--${variant}`)
         button.setAttribute('type', type)
-        if (this.hasAttribute('disabled')) button.disabled = true
 
         // Se icon è presente, passa src ad app-icon prima dell'append (legge in connectedCallback)
         // Se assente, rimuove l'elemento per non lasciare tag vuoti nel DOM

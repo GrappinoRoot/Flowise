@@ -1,88 +1,152 @@
 import template from './ChatView.html?raw'
 import './ChatView.css'
-import { subscribe } from '../../store/store'
-import { getState } from '../../store/store'
-import { mountComposer } from '../../components/Composer/Composer'
-import { Sidebar } from '../../components/Sidebar/Sidebar'
-import { getElement, createEmptyState } from '../../utils/getElement'
-import { Message } from '../../components/Message/Message'
-import { Loading } from '../../components/Loading/Loading'
-import { Navbar } from '../../components/Navbar/Navbar'
-import { showAuthView } from '../../services/viewManager'
-import { signOut } from '../../services/authService'
+import { subscribe, getState } from '../../store/store'
+import { createEmptyState } from '../../utils/getElement'
+import { createTemplate } from '../../utils/createTemplate'
+import type { AppSidebar } from '../../components/Sidebar/Sidebar'
+import type { ChatMessage } from '../../types/chat'
+import '../../components/Sidebar/Sidebar'
+import '../../components/Navbar/Navbar'
+import '../../components/Composer/Composer'
+import '../../components/Message/Message'
+import '../../components/Loading/Loading'
 
-export class ChatView {
-    private host: HTMLElement
-    private messagesElement: HTMLElement
-    private composerElement: HTMLElement
-    private loadingElement: HTMLElement
-    private sidebarElement: HTMLElement
-    private navbarElement: HTMLElement
+type State = ReturnType<typeof getState>
 
-    constructor(host: HTMLElement) {
-        this.host = host
-        this.host.innerHTML = template
+export class AppChatView extends HTMLElement {
+    private messagesElement!: HTMLElement
+    private loadingElement!: HTMLElement
+    private sidebarElement!: AppSidebar
+    private unsubscribe: (() => void) | null = null
+    private cachedLoadingEl: HTMLElement | null = null
+    private prevState: State | null = null
+    private _initialized = false
 
-        this.messagesElement = getElement(this.host, '[data-messages]')
-        this.composerElement = getElement(this.host, '[data-composer]')
-        this.loadingElement = getElement(this.host, '[data-loading]')
-        this.sidebarElement = getElement(this.host, '[data-sidebar]')
-        this.navbarElement = getElement(this.host, '[data-navbar]')
+    // ------------------------
+    // LIFECYCLE
+    // ------------------------
+    connectedCallback(): void {
+        if (this._initialized) return
+        this._initialized = true
+        this.initialize()
+    }
 
-        mountComposer(this.composerElement)
-        new Sidebar(this.sidebarElement)
+    disconnectedCallback(): void {
+        this.unsubscribe?.()
+        this.unsubscribe = null
+    }
 
-        const navbar = new Navbar({
-            isAuthenticated: true,
-            onNavigateAuth: () => showAuthView(),
-            onLogout: async () => {
-                await signOut()
-                showAuthView()
-            }
-        })
+    private initialize(): void {
+        const content = createTemplate(template)
 
-        this.navbarElement.appendChild(navbar.render())
+        const messagesElement = content.querySelector<HTMLElement>('[data-messages]')
+        const composerElement = content.querySelector<HTMLElement>('[data-composer]')
+        const loadingElement = content.querySelector<HTMLElement>('[data-loading]')
+        const sidebarElement = content.querySelector<AppSidebar>('[data-sidebar]')
 
+        if (!messagesElement) throw new Error('Missing [data-messages]')
+        if (!composerElement) throw new Error('Missing [data-composer]')
+        if (!loadingElement) throw new Error('Missing [data-loading]')
+        if (!sidebarElement) throw new Error('Missing [data-sidebar]')
+
+        this.messagesElement = messagesElement
+        this.loadingElement = loadingElement
+        this.sidebarElement = sidebarElement
+
+        this.appendChild(content)
+
+        // render iniziale + sottoscrizione: Zustand notifica, noi aggiorniamo la UI
         this.render()
-        subscribe(() => this.render())
+        this.unsubscribe = subscribe(() => this.render())
     }
 
-    private renderLoading(state: ReturnType<typeof getState>): void {
-        this.loadingElement.replaceChildren()
-        if (!state.loading) return
-        const loading = new Loading()
-        this.loadingElement.appendChild(loading.render())
+    // ------------------------
+    // RENDER — aggiorna solo le sezioni il cui stato è cambiato
+    // ------------------------
+    private render(): void {
+        const prev = this.prevState
+        const state = getState()
+        this.prevState = state
+
+        const sidebarChanged =
+            !prev ||
+            prev.conversations !== state.conversations ||
+            prev.activeConversationId !== state.activeConversationId ||
+            prev.user !== state.user
+
+        const messagesChanged =
+            !prev || prev.activeConversationId !== state.activeConversationId || prev.conversations !== state.conversations
+
+        const loadingChanged = !prev || prev.loading !== state.loading
+
+        if (sidebarChanged) this.renderSidebar(state)
+        if (messagesChanged) this.renderMessages(state, prev)
+        if (loadingChanged) this.renderLoading(state)
     }
 
-    private renderMessages(state: ReturnType<typeof getState>): void {
+    private renderSidebar(state: State): void {
+        this.sidebarElement.setConversations(state.conversations, state.activeConversationId)
+        this.sidebarElement.setUser(state.user)
+    }
+
+    private renderMessages(state: State, prev: State | null): void {
         const activeConversation = state.activeConversationId
             ? state.conversations.find((c) => c.Id === state.activeConversationId)
             : undefined
 
-        this.messagesElement.replaceChildren()
+        const activeChanged = !prev || prev.activeConversationId !== state.activeConversationId
 
-        if (!activeConversation) {
-            this.messagesElement.appendChild(createEmptyState())
+        if (activeChanged) {
+            // Conversazione cambiata: reset completo
+            this.messagesElement.replaceChildren()
+
+            if (!activeConversation) {
+                this.messagesElement.appendChild(createEmptyState())
+                return
+            }
+
+            for (const msg of activeConversation.messages) {
+                this.messagesElement.appendChild(this.createMessageEl(msg))
+            }
+            this.scrollToBottom()
             return
         }
 
-        for (const msg of activeConversation.messages) {
-            const message = new Message({
-                role: msg.role,
-                content: msg.content
-            })
+        // Stessa conversazione: aggiungi solo i nuovi messaggi in coda
+        if (!activeConversation) return
+        const existingCount = this.messagesElement.querySelectorAll('app-message').length
+        const hadNewMessages = existingCount < activeConversation.messages.length
+        for (let i = existingCount; i < activeConversation.messages.length; i++) {
+            this.messagesElement.appendChild(this.createMessageEl(activeConversation.messages[i]))
+        }
+        if (hadNewMessages) this.scrollToBottom()
+    }
 
-            this.messagesElement.appendChild(message.render())
+    private renderLoading(state: State): void {
+        if (state.loading) {
+            if (!this.cachedLoadingEl) {
+                this.cachedLoadingEl = document.createElement('app-loading')
+                this.loadingElement.appendChild(this.cachedLoadingEl)
+            }
+        } else {
+            this.cachedLoadingEl?.remove()
+            this.cachedLoadingEl = null
         }
     }
 
-    private render(): void {
-        const state = getState()
-        this.renderLoading(state)
-        this.renderMessages(state)
+    // ------------------------
+    // HELPERS
+    // ------------------------
+    private createMessageEl(msg: ChatMessage): HTMLElement {
+        const el = document.createElement('app-message')
+        el.setAttribute('role', msg.role)
+        el.setAttribute('content', msg.content)
+        return el
+    }
+
+    private scrollToBottom(): void {
+        this.messagesElement.scrollTop = this.messagesElement.scrollHeight
     }
 }
 
-export function mountChatView(container: HTMLElement) {
-    new ChatView(container)
-}
+customElements.define('app-chat-view', AppChatView)

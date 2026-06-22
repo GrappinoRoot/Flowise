@@ -1,9 +1,15 @@
-<div class="sidebar-top">
-    <div class="logo">Jarvis</div>
-    <div class="sidebar-toggle-container" data-sidebar-toggle></div>
-    <div class="sidebar-header" data-sidebar-header></div>
-</div>
-<div data-conversations></div>
-<div class="sidebar-footer" data-sidebar-footer>
-    <div data-profile></div>
-</div>
+<template>
+    <div class="sidebar-top">
+        <div class="logo">Jarvis</div>
+
+        <app-button data-toggle-button variant="ghost"> </app-button>
+
+        <app-button data-new-chat-button label="New Chat" variant="secondary"> </app-button>
+    </div>
+
+    <div data-conversations></div>
+
+    <div class="sidebar-footer">
+        <app-profile-button data-profile></app-profile-button>
+    </div>
+</template>

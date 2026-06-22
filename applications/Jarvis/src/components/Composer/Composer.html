@@ -1,13 +1,15 @@
-<form class="composer-form" data-composer-form>
-    <input
-        id="message"
-        name="message"
-        class="composer-input"
-        data-composer-input
-        type="text"
-        placeholder="Scrivi un messaggio..."
-        autocomplete="off"
-    />
+<template>
+    <form class="composer-form" data-composer-form>
+        <input
+            id="message"
+            name="message"
+            class="composer-input"
+            data-composer-input
+            type="text"
+            placeholder="Scrivi un messaggio..."
+            autocomplete="off"
+        />
 
-    <div data-submit-button></div>
-</form>
+        <app-button label="Invia" type="submit" variant="primary"></app-button>
+    </form>
+</template>

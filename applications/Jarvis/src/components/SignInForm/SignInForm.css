@@ -11,36 +11,23 @@
     background: #0b0f17;
     color: white;
     outline: none;
+    font-size: inherit;
+    font-family: inherit;
 }
 
 .signin-form input:focus {
     border-color: #3b82f6;
 }
 
-.primary-btn {
+/* app-button diventa block per riempire la colonna flex */
+.signin-form app-button {
+    display: block;
+}
+
+/* il .button interno si allarga a tutto il contenitore */
+.signin-form app-button .button {
+    width: 100%;
     padding: 10px;
-    background: #3b82f6;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-}
-
-.primary-btn:hover {
-    background: #2563eb;
-}
-
-.google-btn {
-    padding: 10px;
-    background: transparent;
-    color: #cbd5e1;
-    border: 1px solid #334155;
-    border-radius: 6px;
-    cursor: pointer;
-}
-
-.google-btn:hover {
-    background: #a73b3b;
 }
 
 .divider {

@@ -1,9 +1,11 @@
-<section class="chat-view">
-    <aside class="sidebar" data-sidebar></aside>
-    <main class="chat-layout">
-        <section class="navbar" data-navbar></section>
-        <section class="messages" data-messages></section>
-        <section class="composer" data-composer></section>
-        <section class="loading" data-loading></section>
-    </main>
-</section>
+<template>
+    <section class="chat-view">
+        <app-sidebar data-sidebar></app-sidebar>
+        <main class="chat-layout">
+            <app-navbar data-navbar></app-navbar>
+            <section class="messages" data-messages></section>
+            <app-composer class="composer" data-composer></app-composer>
+            <section class="loading" data-loading></section>
+        </main>
+    </section>
+</template>

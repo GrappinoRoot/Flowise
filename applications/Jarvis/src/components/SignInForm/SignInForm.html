@@ -1,11 +1,15 @@
-<div class="signin-form">
-    <div data-error class="error-message"></div>
+<template>
+    <div class="signin-form">
+        <div data-error class="error-message"></div>
 
-    <input data-email type="email" placeholder="Email" />
-    <input data-password type="password" placeholder="Password" />
+        <input data-email type="email" placeholder="Email" />
+        <input data-password type="password" placeholder="Password" />
 
-    <button data-login-btn class="primary-btn">Sign in</button>
+        <app-button data-login-btn label="Login" variant="primary"></app-button>
 
-    <div class="divider">or</div>
-    <button data-google-btn></button>
-</div>
+        <div class="divider">or</div>
+        <div data-google-btn>
+            <app-button label="Continue with Google" variant="secondary"></app-button>
+        </div>
+    </div>
+</template>

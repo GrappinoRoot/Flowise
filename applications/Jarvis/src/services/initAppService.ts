@@ -1,5 +1,5 @@
 import { supabase } from '../lib/supabaseClient'
-import { setState, getState, dispatchStore } from '../store/store'
+import { useAppStore, dispatchStore } from '../store/store'
 import type { DbConversation } from '../types/supabaseModel'
 import { mapDbConversationToConversation } from '../mappers/conversationMapper'
 
@@ -23,10 +23,7 @@ export async function initApp() {
         return
     }
 
-    const state = getState()
-
-    setState({
-        ...state,
+    useAppStore.setState({
         conversations: mappedConversations,
         activeConversationId: mappedConversations[0].Id
     })

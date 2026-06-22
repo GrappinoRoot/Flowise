@@ -1,53 +1,74 @@
 import template from './AuthView.html?raw'
 import './AuthView.css'
-import { SignInForm } from '../../components/SignInForm/SignInForm'
-import { SignUpForm } from '../../components/SignUpForm/SignUpForm'
-import { getElement } from '../../utils/getElement'
+import '../../components/SignInForm/SignInForm'
+import '../../components/SignUpForm/SignUpForm'
+import { createTemplate } from '../../utils/createTemplate'
 
 type AuthMode = 'signin' | 'signup'
 
-export class AuthView {
-    private host: HTMLElement
-    private authFormElement: HTMLElement
-    private subtitleElement: HTMLElement
-    private switchModeBtn: HTMLButtonElement
+export class AppAuthView extends HTMLElement {
+    private authFormElement!: HTMLElement
+    private subtitleElement!: HTMLElement
+    private switchModeBtn!: HTMLButtonElement
     private authMode: AuthMode = 'signin'
 
-    constructor(host: HTMLElement) {
-        this.host = host
-        this.host.innerHTML = template
+    private _initialized = false
 
-        this.authFormElement = getElement(this.host, '[data-auth-form]')
-        this.subtitleElement = getElement(this.host, '[data-auth-subtitle]')
-        this.switchModeBtn = getElement(this.host, '[data-switch-mode]')
+    // ------------------------
+    // LIFECYCLE
+    // ------------------------
+    connectedCallback(): void {
+        if (this._initialized) return
+        this._initialized = true
+        this.initialize()
+    }
+
+    private initialize(): void {
+        const content = createTemplate(template)
+
+        const authFormElement = content.querySelector<HTMLElement>('[data-auth-form]')
+        const subtitleElement = content.querySelector<HTMLElement>('[data-auth-subtitle]')
+        const switchModeBtn = content.querySelector<HTMLButtonElement>('[data-switch-mode]')
+
+        if (!authFormElement) throw new Error('Missing [data-auth-form]')
+        if (!subtitleElement) throw new Error('Missing [data-auth-subtitle]')
+        if (!switchModeBtn) throw new Error('Missing [data-switch-mode]')
+
+        this.authFormElement = authFormElement
+        this.subtitleElement = subtitleElement
+        this.switchModeBtn = switchModeBtn
+
+        this.appendChild(content)
 
         this.switchModeBtn.addEventListener('click', () => this.switchMode())
 
-        this.render()
+        this.renderForm()
     }
 
+    // ------------------------
+    // ACTIONS
+    // ------------------------
     private switchMode(): void {
         this.authMode = this.authMode === 'signin' ? 'signup' : 'signin'
-        this.render()
+        this.renderForm()
     }
 
-    private render(): void {
+    // ------------------------
+    // RENDER
+    // ------------------------
+    private renderForm(): void {
         this.authFormElement.innerHTML = ''
 
         if (this.authMode === 'signin') {
             this.subtitleElement.textContent = 'Sign in to continue'
             this.switchModeBtn.textContent = 'Create account'
-            const signInForm = new SignInForm()
-            this.authFormElement.appendChild(signInForm.render())
+            this.authFormElement.appendChild(document.createElement('app-sign-in-form'))
         } else {
             this.subtitleElement.textContent = 'Create your account'
             this.switchModeBtn.textContent = 'Already have an account'
-            const signUpForm = new SignUpForm()
-            this.authFormElement.appendChild(signUpForm.render())
+            this.authFormElement.appendChild(document.createElement('app-sign-up-form'))
         }
     }
 }
 
-export function mountAuthView(container: HTMLElement) {
-    new AuthView(container)
-}
+customElements.define('app-auth-view', AppAuthView)

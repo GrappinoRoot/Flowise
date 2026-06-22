@@ -2,33 +2,55 @@ import template from './SignInForm.html?raw'
 import './SignInForm.css'
 import { supabase } from '../../lib/supabaseClient'
 import { showChatView } from '../../services/viewManager'
-import { Button } from '../Button/Button'
-import google from '../../assets/google.svg'
-import { getElement } from '../../utils/getElement'
+import googleUrl from '../../assets/google.svg?url'
+import { createTemplate } from '../../utils/createTemplate'
+import '../Button/Button'
 
-export class SignInForm {
-    private element: HTMLElement
+export class AppSignInForm extends HTMLElement {
+    private emailInput!: HTMLInputElement
+    private passwordInput!: HTMLInputElement
+    private loginBtn!: HTMLElement
+    private googleBtn!: HTMLElement
+    private errorBox!: HTMLDivElement
 
-    private emailInput: HTMLInputElement
-    private passwordInput: HTMLInputElement
-    private loginBtn: HTMLButtonElement
-    private googleContainer: HTMLElement
-    private errorBox: HTMLDivElement
+    private _initialized = false
 
-    constructor() {
-        const wrapper = document.createElement('div')
-        wrapper.innerHTML = template
+    // ----------------------------
+    // LIFECYCLE
+    // ----------------------------
+    connectedCallback(): void {
+        if (this._initialized) return
+        this._initialized = true
+        this.initialize()
+    }
 
-        this.emailInput = getElement(wrapper, '[data-email]')
-        this.passwordInput = getElement(wrapper, '[data-password]')
-        this.loginBtn = getElement(wrapper, '[data-login-btn]')
-        this.googleContainer = getElement(wrapper, '[data-google-btn]')
-        this.errorBox = getElement(wrapper, '[data-error]')
+    private initialize(): void {
+        const content = createTemplate(template)
 
+        const emailInput = content.querySelector<HTMLInputElement>('[data-email]')
+        const passwordInput = content.querySelector<HTMLInputElement>('[data-password]')
+        const loginBtn = content.querySelector<HTMLElement>('[data-login-btn]')
+        const googleBtn = content.querySelector<HTMLElement>('[data-google-btn] app-button')
+        const errorBox = content.querySelector<HTMLDivElement>('[data-error]')
+
+        if (!emailInput) throw new Error('Missing [data-email]')
+        if (!passwordInput) throw new Error('Missing [data-password]')
+        if (!loginBtn) throw new Error('Missing [data-login-btn]')
+        if (!googleBtn) throw new Error('Missing [data-google-btn] app-button')
+        if (!errorBox) throw new Error('Missing [data-error]')
+
+        this.emailInput = emailInput
+        this.passwordInput = passwordInput
+        this.loginBtn = loginBtn
+        this.googleBtn = googleBtn
+        this.errorBox = errorBox
+
+        // Passa l'URL dell'icona Google PRIMA dell'append:
+        // app-button la leggerà in connectedCallback e renderizzerà app-icon
+        googleBtn.setAttribute('icon', googleUrl)
+
+        this.appendChild(content)
         this.bindEvents()
-        this.mountGoogleButton()
-
-        this.element = wrapper.firstElementChild as HTMLElement
     }
 
     // ----------------------------
@@ -37,6 +59,7 @@ export class SignInForm {
     private bindEvents(): void {
         this.loginBtn.addEventListener('click', async () => {
             this.clearError()
+            this.setLoading(true)
 
             const { error } = await supabase.auth.signInWithPassword({
                 email: this.emailInput.value,
@@ -44,6 +67,7 @@ export class SignInForm {
             })
 
             if (error) {
+                this.setLoading(false)
                 if (error.code === 'invalid_credentials') {
                     this.showError('Email o password non corretti')
                 } else {
@@ -54,28 +78,34 @@ export class SignInForm {
 
             showChatView()
         })
+
+        this.googleBtn.addEventListener('click', async () => {
+            this.setLoading(true)
+            const { error } = await supabase.auth.signInWithOAuth({
+                provider: 'google',
+                options: { redirectTo: window.location.origin }
+            })
+
+            if (error) {
+                this.setLoading(false)
+                this.showError('Errore durante il login con Google')
+            }
+        })
     }
 
-    private mountGoogleButton(): void {
-        const googleBtn = new Button({
-            label: 'Continue with Google',
-            icon: google,
-            variant: 'secondary',
-            onClick: async () => {
-                const { error } = await supabase.auth.signInWithOAuth({
-                    provider: 'google',
-                    options: {
-                        redirectTo: window.location.origin
-                    }
-                })
-
-                if (error) {
-                    this.showError('Errore login Google')
-                }
-            }
-        }).render()
-
-        this.googleContainer.replaceWith(googleBtn)
+    // ----------------------------
+    // LOADING STATE
+    // ----------------------------
+    private setLoading(loading: boolean): void {
+        if (loading) {
+            this.loginBtn.setAttribute('disabled', '')
+            this.loginBtn.setAttribute('label', '...')
+            this.googleBtn.setAttribute('disabled', '')
+        } else {
+            this.loginBtn.removeAttribute('disabled')
+            this.loginBtn.setAttribute('label', 'Login')
+            this.googleBtn.removeAttribute('disabled')
+        }
     }
 
     // ----------------------------
@@ -88,11 +118,6 @@ export class SignInForm {
     private clearError(): void {
         this.errorBox.textContent = ''
     }
-
-    // ----------------------------
-    // RENDER
-    // ----------------------------
-    public render(): HTMLElement {
-        return this.element
-    }
 }
+
+customElements.define('app-sign-in-form', AppSignInForm)
