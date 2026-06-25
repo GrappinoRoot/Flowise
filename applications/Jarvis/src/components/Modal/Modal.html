@@ -3,16 +3,10 @@
         <div class="modal" data-modal role="dialog" aria-modal="true">
             <div class="modal__header" data-header>
                 <h2 class="modal__title" data-title></h2>
-                <button class="modal__close" data-close aria-label="Close">
-                    <app-icon src="/icons/close.svg" alt="Close"></app-icon>
-                </button>
+                <button class="modal__close" data-close aria-label="Close">&#x2715;</button>
             </div>
-            <div class="modal__content" data-content>
-                <slot></slot>
-            </div>
-            <div class="modal__footer" data-footer>
-                <slot name="footer"></slot>
-            </div>
+            <div class="modal__content" data-content></div>
+            <div class="modal__footer" data-footer></div>
         </div>
     </div>
 </template>

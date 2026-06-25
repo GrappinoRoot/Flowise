@@ -1,0 +1,138 @@
+<template>
+    <div class="posts-view">
+        <div class="header">
+            <h2>All Posts</h2>
+            <div class="filters">
+                <button class="filter-btn active">All</button>
+                <button class="filter-btn">Published</button>
+                <button class="filter-btn">Drafts</button>
+            </div>
+        </div>
+
+        <div class="posts-list">
+            <div class="post-item">
+                <div class="post-content">
+                    <span class="post-platform">Instagram</span>
+                    <p class="post-text">Exploring the new features of AI! #tech #ai</p>
+                </div>
+                <div class="post-meta">
+                    <span class="post-date">2023-10-27</span>
+                    <span class="post-status status-published">Published</span>
+                </div>
+            </div>
+            <div class="post-item">
+                <div class="post-content">
+                    <span class="post-platform">Twitter/X</span>
+                    <p class="post-text">Just a quick update on our project progress.</p>
+                </div>
+                <div class="post-meta">
+                    <span class="post-date">2023-10-26</span>
+                    <span class="post-status status-draft">Draft</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .posts-view {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-lg);
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h2 {
+            margin: 0;
+            color: var(--color-text-main);
+        }
+
+        .filters {
+            display: flex;
+            gap: var(--spacing-sm);
+        }
+
+        .filter-btn {
+            background: var(--color-bg-surface);
+            border: 1px solid var(--color-border);
+            padding: 6px 16px;
+            border-radius: var(--radius-full);
+            cursor: pointer;
+            font-size: var(--font-size-sm);
+        }
+
+        .filter-btn.active {
+            background: var(--color-primary);
+            color: var(--color-white);
+            border-color: var(--color-primary);
+        }
+
+        .posts-list {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-md);
+        }
+
+        .post-item {
+            background: var(--color-bg-surface);
+            padding: var(--spacing-md) var(--spacing-lg);
+            border-radius: var(--radius-lg);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .post-content {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-xs);
+        }
+
+        .post-platform {
+            font-size: var(--font-size-xs);
+            font-weight: 600;
+            text-transform: uppercase;
+            color: var(--color-text-muted);
+        }
+
+        .post-text {
+            margin: 0;
+            color: var(--color-text-main);
+            font-size: var(--font-size-md);
+        }
+
+        .post-meta {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: var(--spacing-xs);
+        }
+
+        .post-date {
+            font-size: var(--font-size-sm);
+            color: var(--color-text-muted);
+        }
+
+        .post-status {
+            font-size: var(--font-size-xs);
+            padding: 2px 8px;
+            border-radius: var(--radius-full);
+            font-weight: 500;
+        }
+
+        .status-published {
+            background: var(--color-success-bg);
+            color: var(--color-success-text);
+        }
+
+        .status-draft {
+            background: var(--color-border);
+            color: var(--color-text-muted);
+        }
+    </style>
+</template>

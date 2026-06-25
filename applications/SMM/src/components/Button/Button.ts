@@ -1,6 +1,5 @@
-import './Button.css'
 import template from './Button.html?raw'
-import { createTemplate } from '../utils/createTemplate'
+import { createTemplate } from '../../utils/createTemplate'
 import '../Icon/Icon'
 
 export class AppButton extends HTMLElement {

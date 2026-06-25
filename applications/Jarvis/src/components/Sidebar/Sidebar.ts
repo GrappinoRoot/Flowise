@@ -8,7 +8,6 @@ import type { Conversation } from '../../types/chat'
 import { AppConversationItem } from '../ConversationItem/ConversationItem'
 import { AppProfileButton } from '../ProfileButton/ProfileButton'
 import '../Button/Button'
-import { showAuthView } from '../../services/viewManager'
 import { signOut } from '../../services/authService'
 import toggleIcon from '../../assets/toggle.svg'
 
@@ -49,6 +48,9 @@ export class AppSidebar extends HTMLElement {
         this.toggleButton = toggleButton
         this.newChatButton = newChatButton
         this.profileButton = profileButton
+
+        // Applica la classe base qui: il CSS usa .sidebar e .sidebar.collapsed
+        this.classList.add('sidebar')
 
         this.appendChild(content)
         this.bindEvents()
@@ -126,7 +128,7 @@ export class AppSidebar extends HTMLElement {
 
     private async handleLogout(): Promise<void> {
         await signOut()
-        showAuthView()
+        // La navigazione post-logout è gestita da onAuthStateChange in main.ts
     }
 }
 

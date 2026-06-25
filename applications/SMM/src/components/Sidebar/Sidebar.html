@@ -1,0 +1,90 @@
+<template>
+    <nav class="sidebar">
+        <div class="logo">
+            <span class="logo-icon">🚀</span>
+            <span class="logo-text">SMM Agent</span>
+        </div>
+        <ul class="nav-list">
+            <li class="nav-item" data-route="dashboard">
+                <span class="nav-icon">📊</span>
+                <span class="nav-label">Dashboard</span>
+            </li>
+            <li class="nav-item" data-route="agents">
+                <span class="nav-icon">🤖</span>
+                <span class="nav-label">Agents</span>
+            </li>
+            <li class="nav-item" data-route="posts">
+                <span class="nav-icon">📝</span>
+                <span class="nav-label">Posts</span>
+            </li>
+            <li class="nav-item" data-route="debug">
+                <span class="nav-icon">🛠️</span>
+                <span class="nav-label">Debug</span>
+            </li>
+            <li class="nav-item" data-route="settings">
+                <span class="nav-icon">⚙️</span>
+                <span class="nav-label">Settings</span>
+            </li>
+        </ul>
+    </nav>
+
+    <style>
+        .sidebar {
+            width: 260px;
+            height: 100%;
+            background-color: var(--color-bg-sidebar);
+            color: var(--color-white);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .logo {
+            padding: var(--spacing-lg);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: var(--font-size-lg);
+            font-weight: bold;
+            border-bottom: 1px solid var(--color-border-light);
+        }
+
+        .logo-icon {
+            font-size: 1.5rem;
+        }
+
+        .nav-list {
+            list-style: none;
+            padding: var(--spacing-md) 0;
+            margin: 0;
+            flex: 1;
+        }
+
+        .nav-item {
+            padding: 12px 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: var(--color-text-light);
+        }
+
+        .nav-item:hover {
+            background-color: var(--color-bg-sidebar-hover);
+            color: var(--color-white);
+        }
+
+        .nav-item.active {
+            background-color: var(--color-bg-sidebar-active);
+            color: var(--color-white);
+        }
+
+        .nav-icon {
+            font-size: 1.2rem;
+        }
+
+        .nav-label {
+            font-size: var(--font-size-sm);
+        }
+    </style>
+</template>

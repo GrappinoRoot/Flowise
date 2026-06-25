@@ -23,7 +23,7 @@ export function reducer(currentState: AppState, type: ActionType, payload: Actio
         case 'USER_SET':
             return { ...currentState, user: (payload as ActionPayloadMap['USER_SET']).user }
         case 'USER_CLEAR':
-            return { ...currentState, user: null }
+            return { ...currentState, user: null, conversations: [], activeConversationId: null }
         default:
             return currentState
     }

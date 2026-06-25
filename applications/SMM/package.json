@@ -1,0 +1,16 @@
+{
+    "name": "smm-ui-dev",
+    "private": true,
+    "type": "module",
+    "scripts": {
+        "dev": "vite",
+        "build": "vite build",
+        "preview": "vite preview",
+        "type-check": "tsc --noEmit",
+        "validate": "npm run type-check && npm run build"
+    },
+    "devDependencies": {
+        "vite": "^5.0.0",
+        "typescript": "^5.0.0"
+    }
+}

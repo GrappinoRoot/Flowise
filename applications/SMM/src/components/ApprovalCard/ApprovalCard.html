@@ -1,0 +1,68 @@
+<template>
+    <div class="approval-card">
+        <div class="preview-container">
+            <span class="platform">Instagram</span>
+            <p class="content">"Check out this amazing view! #nature #photography"</p>
+        </div>
+        <div class="actions">
+            <button class="btn-reject">Reject</button>
+            <button class="btn-approve">Approve</button>
+        </div>
+    </div>
+
+    <style>
+        .approval-card {
+            background: var(--color-bg-surface);
+            border-radius: var(--radius-md);
+            padding: var(--spacing-md);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .preview-container {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-sm);
+        }
+
+        .platform {
+            font-size: var(--font-size-xs);
+            font-weight: 600;
+            color: var(--color-text-muted);
+            text-transform: uppercase;
+        }
+
+        .content {
+            margin: 0;
+            font-size: var(--font-size-lg);
+            color: var(--color-text-main);
+        }
+
+        .actions {
+            display: flex;
+            gap: var(--spacing-md);
+        }
+
+        .btn-approve {
+            background-color: var(--color-success);
+            color: var(--color-white);
+            border: none;
+            padding: 10px 20px;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        .btn-reject {
+            background-color: var(--color-white);
+            color: var(--color-danger);
+            border: 1px solid var(--color-danger);
+            padding: 10px 20px;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            font-weight: 500;
+        }
+    </style>
+</template>

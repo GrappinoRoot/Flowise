@@ -1,0 +1,156 @@
+{
+    "description": "An autonomous Social Media Manager agent that generates content, asks for human approval, and publishes to social networks.",
+    "usecases": ["Social Media Automation", "Content Creation"],
+    "nodes": [
+        {
+            "id": "start_smm_0",
+            "type": "agentFlow",
+            "position": { "x": 0, "y": 0 },
+            "data": {
+                "id": "start_smm_0",
+                "label": "Start SMM",
+                "version": 1.0,
+                "name": "startAgentflow",
+                "type": "Start",
+                "color": "#7EE787",
+                "inputParams": [
+                    {
+                        "label": "Topic/Theme",
+                        "name": "topic",
+                        "type": "string",
+                        "placeholder": "e.g., Launch of our new AI product"
+                    }
+                ],
+                "inputs": {
+                    "topic": ""
+                },
+                "outputAnchors": [
+                    {
+                        "id": "start_smm_0-output-start",
+                        "label": "Start",
+                        "name": "start"
+                    }
+                ]
+            }
+        },
+        {
+            "id": "agent_content_creator_0",
+            "type": "agentFlow",
+            "position": { "x": 250, "y": 0 },
+            "data": {
+                "id": "agent_content_creator_0",
+                "label": "Content Creator Agent",
+                "version": 1.0,
+                "name": "agentAgentflow",
+                "type": "Agent",
+                "color": "#4DD0E1",
+                "inputParams": [
+                    {
+                        "label": "Model",
+                        "name": "agentModel",
+                        "type": "asyncOptions",
+                        "loadMethod": "listModels"
+                    },
+                    {
+                        "label": "System Prompt",
+                        "name": "agentSystemPrompt",
+                        "type": "string",
+                        "default": "You are an expert Social Media Manager. Create engaging posts with hashtags based on the user topic."
+                    }
+                ],
+                "inputs": {
+                    "agentModel": "z-ai/glm-5.2-free",
+                    "agentSystemPrompt": "You are an expert Social Media Manager. Create engaging posts with hashtags based on the user topic."
+                },
+                "outputAnchors": [
+                    {
+                        "id": "agent_content_creator_0-output-agent",
+                        "label": "Agent",
+                        "name": "agent"
+                    }
+                ]
+            }
+        },
+        {
+            "id": "human_approval_0",
+            "type": "agentFlow",
+            "position": { "x": 500, "y": 0 },
+            "data": {
+                "id": "human_approval_0",
+                "label": "Approval Step",
+                "version": 1.0,
+                "name": "humanInputAgentflow",
+                "type": "HumanInput",
+                "color": "#6E6EFD",
+                "inputParams": [
+                    {
+                        "label": "Description",
+                        "name": "humanInputDescription",
+                        "type": "string",
+                        "default": "Review the generated post. Do you want to publish it?"
+                    }
+                ],
+                "inputs": {
+                    "humanInputDescription": "Review the generated post. Do you want to publish it?"
+                },
+                "outputAnchors": [
+                    {
+                        "id": "human_approval_0-output-0",
+                        "label": "Approved",
+                        "name": "approve"
+                    },
+                    {
+                        "id": "human_approval_0-output-1",
+                        "label": "Rejected",
+                        "name": "reject"
+                    }
+                ]
+            }
+        },
+        {
+            "id": "tool_publisher_0",
+            "type": "agentFlow",
+            "position": { "x": 750, "y": 0 },
+            "data": {
+                "id": "tool_publisher_0",
+                "label": "Social Publisher",
+                "version": 1.0,
+                "name": "toolAgentflow",
+                "type": "Tool",
+                "color": "#d4a373",
+                "inputParams": [
+                    {
+                        "label": "Tool",
+                        "name": "toolAgentflowSelectedTool",
+                        "type": "asyncOptions",
+                        "loadMethod": "listTools"
+                    }
+                ],
+                "inputs": {
+                    "toolAgentflowSelectedTool": "instagram_post",
+                    "toolInputArgs": [
+                        {
+                            "inputArgName": "caption",
+                            "inputArgValue": "{{ agent_content_creator_0.output.content }}"
+                        }
+                    ],
+                    "toolAgentflowSelectedToolConfig": {
+                        "toolAgentflowSelectedTool": "instagram_post"
+                    }
+                },
+                "outputAnchors": [
+                    {
+                        "id": "tool_publisher_0-output-tool",
+                        "label": "Published",
+                        "name": "tool"
+                    }
+                ]
+            }
+        }
+    ],
+    "edges": [
+        { "from": "start_smm_0", "to": "agent_content_creator_0" },
+        { "from": "agent_content_creator_0", "to": "human_approval_0" },
+        { "from": "human_approval_0", "to": "tool_publisher_0", "condition": "isApproved" }
+    ]
+}

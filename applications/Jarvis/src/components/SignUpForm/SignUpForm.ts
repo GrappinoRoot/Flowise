@@ -1,16 +1,17 @@
 import template from './SignUpForm.html?raw'
 import './SignUpForm.css'
 import { supabase } from '../../lib/supabaseClient'
-import { showChatView } from '../../services/viewManager'
 import googleUrl from '../../assets/google.svg?url'
 import { createTemplate } from '../../utils/createTemplate'
 import '../Button/Button'
+import '../FormInput/FormInput'
+import type { AppFormInput } from '../FormInput/FormInput'
 
 export class AppSignUpForm extends HTMLElement {
-    private usernameInput!: HTMLInputElement
-    private emailInput!: HTMLInputElement
-    private passwordInput!: HTMLInputElement
-    private confirmPasswordInput!: HTMLInputElement
+    private usernameInput!: AppFormInput
+    private emailInput!: AppFormInput
+    private passwordInput!: AppFormInput
+    private confirmPasswordInput!: AppFormInput
     private signupBtn!: HTMLElement
     private googleBtn!: HTMLElement
     private errorBox!: HTMLDivElement
@@ -29,10 +30,10 @@ export class AppSignUpForm extends HTMLElement {
     private initialize(): void {
         const content = createTemplate(template)
 
-        const usernameInput = content.querySelector<HTMLInputElement>('[data-username]')
-        const emailInput = content.querySelector<HTMLInputElement>('[data-email]')
-        const passwordInput = content.querySelector<HTMLInputElement>('[data-password]')
-        const confirmPasswordInput = content.querySelector<HTMLInputElement>('[data-confirm-password]')
+        const usernameInput = content.querySelector<AppFormInput>('[data-username]')
+        const emailInput = content.querySelector<AppFormInput>('[data-email]')
+        const passwordInput = content.querySelector<AppFormInput>('[data-password]')
+        const confirmPasswordInput = content.querySelector<AppFormInput>('[data-confirm-password]')
         const signupBtn = content.querySelector<HTMLElement>('[data-signup-btn]')
         const googleBtn = content.querySelector<HTMLElement>('[data-google-btn] app-button')
         const errorBox = content.querySelector<HTMLDivElement>('[data-error]')
@@ -81,12 +82,12 @@ export class AppSignUpForm extends HTMLElement {
         this.signupBtn.addEventListener('click', async () => {
             this.clearError()
 
-            if (this.passwordInput.value !== this.confirmPasswordInput.value) {
+            if (this.passwordInput.getValue() !== this.confirmPasswordInput.getValue()) {
                 this.showError('Le password non corrispondono')
                 return
             }
 
-            if (!this.emailInput.value || !this.passwordInput.value) {
+            if (!this.emailInput.getValue() || !this.passwordInput.getValue()) {
                 this.showError('Inserisci email e password')
                 return
             }
@@ -94,25 +95,24 @@ export class AppSignUpForm extends HTMLElement {
             this.setLoading(true)
 
             const { error } = await supabase.auth.signUp({
-                email: this.emailInput.value,
-                password: this.passwordInput.value,
+                email: this.emailInput.getValue(),
+                password: this.passwordInput.getValue(),
                 options: {
-                    data: { username: this.usernameInput.value }
+                    data: { username: this.usernameInput.getValue() }
                 }
             })
 
             if (error) {
                 this.setLoading(false)
                 if (error.message.toLowerCase().includes('already registered') || error.code === 'user_already_exists') {
-                    this.showError('Account già esistente. Reindirizzamento al login...')
-                    setTimeout(() => showChatView(), 2000)
+                    this.showError('Account già esistente. Effettua il login.')
                 } else {
                     this.showError('Errore durante la registrazione: ' + error.message)
                 }
                 return
             }
 
-            showChatView()
+            // La navigazione verso ChatView è gestita da onAuthStateChange in main.ts
         })
     }
 

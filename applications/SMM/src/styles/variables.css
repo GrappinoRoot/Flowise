@@ -1,0 +1,62 @@
+:root {
+    /* Colors - Brand & Semantic */
+    --color-primary: #3b82f6;
+    --color-primary-hover: #2563eb;
+
+    --color-success: #10b981;
+    --color-success-bg: #dcfce7;
+    --color-success-text: #166534;
+
+    --color-warning: #f59e0b;
+    --color-warning-bg: #fef3c7;
+    --color-warning-text: #92400e;
+
+    --color-danger: #ef4444;
+    --color-danger-bg: #fee2e2;
+    --color-danger-text: #991b1b;
+
+    --color-info: #3b82f6;
+    --color-info-bg: #dbeafe;
+    --color-info-text: #1e40af;
+
+    /* Colors - Neutrals */
+    --color-white: #ffffff;
+    --color-text-main: #1e293b;
+    --color-text-muted: #64748b;
+    --color-text-light: #94a3b8;
+
+    --color-bg-main: #f4f7f6;
+    --color-bg-surface: #ffffff;
+    --color-bg-sidebar: #1e293b;
+    --color-bg-sidebar-hover: #334155;
+    --color-bg-sidebar-active: #3b82f6;
+
+    --color-border: #e2e8f0;
+    --color-border-light: #f1f5f9;
+
+    /* Spacing */
+    --spacing-xs: 4px;
+    --spacing-sm: 8px;
+    --spacing-md: 16px;
+    --spacing-lg: 24px;
+    --spacing-xl: 32px;
+
+    /* Typography */
+    --font-main: 'Inter', sans-serif;
+    --font-size-xs: 0.75rem;
+    --font-size-sm: 0.875rem;
+    --font-size-md: 1rem;
+    --font-size-lg: 1.25rem;
+    --font-size-xl: 1.5rem;
+    --font-size-2xl: 1.875rem;
+
+    /* Borders & Shadows */
+    --radius-sm: 4px;
+    --radius-md: 8px;
+    --radius-lg: 12px;
+    --radius-full: 9999px;
+
+    --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+}

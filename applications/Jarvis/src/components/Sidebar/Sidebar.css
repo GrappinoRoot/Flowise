@@ -1,7 +1,8 @@
 .sidebar {
     width: 280px;
     border-right: 1px solid #e5e7eb;
-    transition: width 0.2s ease;
+    transition: width 0.25s ease;
+    overflow: hidden;
 }
 
 .sidebar.collapsed {

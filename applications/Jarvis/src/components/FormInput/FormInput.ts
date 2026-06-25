@@ -2,25 +2,37 @@ import './FormInput.css'
 import template from './FormInput.html?raw'
 import { createTemplate } from '../../utils/createTemplate'
 
-export class FormInput extends HTMLElement {
+export class AppFormInput extends HTMLElement {
+    private inputEl!: HTMLInputElement
+    private labelEl!: HTMLElement
+    private errorEl!: HTMLElement
     private _initialized = false
 
-    static get observedAttributes() {
+    // ------------------------
+    // OBSERVED ATTRIBUTES
+    // ------------------------
+    static get observedAttributes(): string[] {
         return ['label', 'type', 'placeholder', 'value', 'required', 'error']
     }
 
+    attributeChangedCallback(_name: string, oldValue: string | null, newValue: string | null): void {
+        if (this._initialized && oldValue !== newValue) {
+            this.updateField()
+        }
+    }
+
+    // ------------------------
+    // LIFECYCLE
+    // ------------------------
     connectedCallback(): void {
         if (this._initialized) return
         this._initialized = true
         this.initialize()
     }
 
-    attributeChangedCallback(name: string, oldValue: string, newValue: string) {
-        if (this._initialized && oldValue !== newValue) {
-            this.updateField()
-        }
-    }
-
+    // ------------------------
+    // INIT
+    // ------------------------
     private initialize(): void {
         const content = createTemplate(template)
 
@@ -32,52 +44,55 @@ export class FormInput extends HTMLElement {
         if (!inputEl) throw new Error('Missing [data-input]')
         if (!errorEl) throw new Error('Missing [data-error]')
 
-        this.updateField()
+        this.labelEl = labelEl
+        this.inputEl = inputEl
+        this.errorEl = errorEl
 
-        // Dispatch event on input
         inputEl.addEventListener('input', () => {
             this.dispatchEvent(
                 new CustomEvent('input-change', {
+                    bubbles: true,
                     detail: { value: inputEl.value }
                 })
             )
         })
 
         this.appendChild(content)
+
+        // Legge gli attributi iniziali DOPO appendChild (refs già valorizzate)
+        this.updateField()
     }
 
+    // ------------------------
+    // PRIVATE
+    // ------------------------
     private updateField(): void {
-        const inputEl = this.querySelector('[data-input]') as HTMLInputElement
-        const labelEl = this.querySelector('[data-label]') as HTMLLabelElement
-        const errorEl = this.querySelector('[data-error]') as HTMLElement
-
-        if (!inputEl) return
-
-        inputEl.type = this.getAttribute('type') ?? 'text'
-        inputEl.placeholder = this.getAttribute('placeholder') ?? ''
-        inputEl.value = this.getAttribute('value') ?? ''
-        inputEl.required = this.hasAttribute('required')
-
-        if (labelEl) {
-            labelEl.textContent = this.getAttribute('label') ?? ''
-        }
-
-        if (errorEl) {
-            errorEl.textContent = this.getAttribute('error') ?? ''
-        }
+        this.inputEl.type = this.getAttribute('type') ?? 'text'
+        this.inputEl.placeholder = this.getAttribute('placeholder') ?? ''
+        this.inputEl.value = this.getAttribute('value') ?? ''
+        this.inputEl.required = this.hasAttribute('required')
+        this.labelEl.textContent = this.getAttribute('label') ?? ''
+        this.errorEl.textContent = this.getAttribute('error') ?? ''
     }
 
+    // ------------------------
+    // PUBLIC API
+    // ------------------------
     getValue(): string {
-        const input = this.querySelector('[data-input]') as HTMLInputElement
-        return input?.value ?? ''
+        return this.inputEl?.value ?? ''
     }
 
     setValue(value: string): void {
-        const input = this.querySelector('[data-input]') as HTMLInputElement
-        if (input) {
-            input.value = value
-        }
+        if (this.inputEl) this.inputEl.value = value
+    }
+
+    setError(msg: string): void {
+        this.setAttribute('error', msg)
+    }
+
+    clearError(): void {
+        this.removeAttribute('error')
     }
 }
 
-customElements.define('form-input', FormInput)
+customElements.define('app-form-input', AppFormInput)

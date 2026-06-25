@@ -7,11 +7,13 @@ export function initializeViewManager(container: HTMLElement) {
     rootElement = container
 }
 
-export function showAuthView() {
+export function showAuthView(initialMode: 'signin' | 'signup' = 'signin') {
     if (!rootElement) return
 
     rootElement.innerHTML = ''
-    rootElement.appendChild(document.createElement('app-auth-view'))
+    const view = document.createElement('app-auth-view')
+    view.setAttribute('initial-mode', initialMode)
+    rootElement.appendChild(view)
 }
 
 export function showChatView() {

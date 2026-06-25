@@ -1,0 +1,70 @@
+<template>
+    <div class="post-card">
+        <div class="post-preview">
+            <div class="placeholder-img">📸</div>
+            <div class="text-preview" data-content></div>
+        </div>
+        <div class="post-meta">
+            <span class="platform-tag" data-platform>Instagram</span>
+            <span class="post-date" data-date>Today</span>
+        </div>
+    </div>
+</template>
+
+<style>
+    .post-card {
+        background: var(--color-bg-surface);
+        border-radius: var(--radius-lg);
+        overflow: hidden;
+        box-shadow: var(--shadow-md);
+        transition: transform 0.2s;
+        width: 100%;
+        max-width: 300px;
+    }
+
+    .post-card:hover {
+        transform: translateY(-4px);
+    }
+
+    .post-preview {
+        height: 200px;
+        background: var(--color-border);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 3rem;
+    }
+
+    .text-preview {
+        padding: var(--spacing-sm);
+        font-size: var(--font-size-sm);
+        color: var(--color-text-main);
+        height: 60px;
+        overflow: hidden;
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+    }
+
+    .post-meta {
+        padding: var(--spacing-sm);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-top: 1px solid var(--color-border-light);
+    }
+
+    .platform-tag {
+        font-size: var(--font-size-xs);
+        font-weight: 600;
+        padding: 4px 8px;
+        border-radius: var(--radius-full);
+        background: var(--color-info-bg);
+        color: var(--color-info-text);
+    }
+
+    .post-date {
+        font-size: var(--font-size-xs);
+        color: var(--color-text-light);
+    }
+</style>

@@ -38,6 +38,10 @@ export class AppAuthView extends HTMLElement {
         this.subtitleElement = subtitleElement
         this.switchModeBtn = switchModeBtn
 
+        // Legge la modalità iniziale impostata dal viewManager
+        const initialMode = this.getAttribute('initial-mode')
+        if (initialMode === 'signup') this.authMode = 'signup'
+
         this.appendChild(content)
 
         this.switchModeBtn.addEventListener('click', () => this.switchMode())

@@ -1,14 +1,15 @@
 import template from './SignInForm.html?raw'
 import './SignInForm.css'
 import { supabase } from '../../lib/supabaseClient'
-import { showChatView } from '../../services/viewManager'
 import googleUrl from '../../assets/google.svg?url'
 import { createTemplate } from '../../utils/createTemplate'
 import '../Button/Button'
+import '../FormInput/FormInput'
+import type { AppFormInput } from '../FormInput/FormInput'
 
 export class AppSignInForm extends HTMLElement {
-    private emailInput!: HTMLInputElement
-    private passwordInput!: HTMLInputElement
+    private emailInput!: AppFormInput
+    private passwordInput!: AppFormInput
     private loginBtn!: HTMLElement
     private googleBtn!: HTMLElement
     private errorBox!: HTMLDivElement
@@ -27,8 +28,8 @@ export class AppSignInForm extends HTMLElement {
     private initialize(): void {
         const content = createTemplate(template)
 
-        const emailInput = content.querySelector<HTMLInputElement>('[data-email]')
-        const passwordInput = content.querySelector<HTMLInputElement>('[data-password]')
+        const emailInput = content.querySelector<AppFormInput>('[data-email]')
+        const passwordInput = content.querySelector<AppFormInput>('[data-password]')
         const loginBtn = content.querySelector<HTMLElement>('[data-login-btn]')
         const googleBtn = content.querySelector<HTMLElement>('[data-google-btn] app-button')
         const errorBox = content.querySelector<HTMLDivElement>('[data-error]')
@@ -62,8 +63,8 @@ export class AppSignInForm extends HTMLElement {
             this.setLoading(true)
 
             const { error } = await supabase.auth.signInWithPassword({
-                email: this.emailInput.value,
-                password: this.passwordInput.value
+                email: this.emailInput.getValue(),
+                password: this.passwordInput.getValue()
             })
 
             if (error) {
@@ -76,7 +77,7 @@ export class AppSignInForm extends HTMLElement {
                 return
             }
 
-            showChatView()
+            // La navigazione verso ChatView è gestita da onAuthStateChange in main.ts
         })
 
         this.googleBtn.addEventListener('click', async () => {

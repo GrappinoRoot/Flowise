@@ -1,0 +1,67 @@
+<template>
+    <div class="layout-container">
+        <app-sidebar></app-sidebar>
+        <main class="main-content">
+            <header class="top-bar">
+                <h2 data-view-title>Dashboard</h2>
+                <div class="user-profile">
+                    <span>Admin</span>
+                </div>
+            </header>
+            <section class="content-area" id="main-view">
+                <slot></slot>
+            </section>
+        </main>
+    </div>
+</template>
+
+<style>
+    :host {
+        display: block;
+        height: 100vh;
+        width: 100vw;
+        overflow: hidden;
+        font-family: var(--font-main);
+    }
+
+    .layout-container {
+        display: flex;
+        height: 100%;
+        width: 100%;
+    }
+
+    .main-content {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        background-color: var(--color-bg-main);
+        overflow-y: auto;
+    }
+
+    .top-bar {
+        height: 60px;
+        background: var(--color-bg-surface);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 var(--spacing-lg);
+        box-shadow: var(--shadow-sm);
+        z-index: 10;
+    }
+
+    .top-bar h2 {
+        margin: 0;
+        font-size: var(--font-size-lg);
+        color: var(--color-text-main);
+    }
+
+    .content-area {
+        padding: var(--spacing-lg);
+        flex: 1;
+    }
+
+    .user-profile {
+        font-weight: 500;
+        color: var(--color-text-muted);
+    }
+</style>

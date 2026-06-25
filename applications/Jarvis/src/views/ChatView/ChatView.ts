@@ -4,6 +4,7 @@ import { subscribe, getState } from '../../store/store'
 import { createEmptyState } from '../../utils/getElement'
 import { createTemplate } from '../../utils/createTemplate'
 import type { AppSidebar } from '../../components/Sidebar/Sidebar'
+import type { AppNavbar } from '../../components/Navbar/Navbar'
 import type { ChatMessage } from '../../types/chat'
 import '../../components/Sidebar/Sidebar'
 import '../../components/Navbar/Navbar'
@@ -17,6 +18,7 @@ export class AppChatView extends HTMLElement {
     private messagesElement!: HTMLElement
     private loadingElement!: HTMLElement
     private sidebarElement!: AppSidebar
+    private navbarElement!: AppNavbar
     private unsubscribe: (() => void) | null = null
     private cachedLoadingEl: HTMLElement | null = null
     private prevState: State | null = null
@@ -43,15 +45,18 @@ export class AppChatView extends HTMLElement {
         const composerElement = content.querySelector<HTMLElement>('[data-composer]')
         const loadingElement = content.querySelector<HTMLElement>('[data-loading]')
         const sidebarElement = content.querySelector<AppSidebar>('[data-sidebar]')
+        const navbarElement = content.querySelector<AppNavbar>('[data-navbar]')
 
         if (!messagesElement) throw new Error('Missing [data-messages]')
         if (!composerElement) throw new Error('Missing [data-composer]')
         if (!loadingElement) throw new Error('Missing [data-loading]')
         if (!sidebarElement) throw new Error('Missing [data-sidebar]')
+        if (!navbarElement) throw new Error('Missing [data-navbar]')
 
         this.messagesElement = messagesElement
         this.loadingElement = loadingElement
         this.sidebarElement = sidebarElement
+        this.navbarElement = navbarElement
 
         this.appendChild(content)
 
@@ -78,10 +83,12 @@ export class AppChatView extends HTMLElement {
             !prev || prev.activeConversationId !== state.activeConversationId || prev.conversations !== state.conversations
 
         const loadingChanged = !prev || prev.loading !== state.loading
+        const navbarChanged = !prev || prev.user !== state.user
 
         if (sidebarChanged) this.renderSidebar(state)
         if (messagesChanged) this.renderMessages(state, prev)
         if (loadingChanged) this.renderLoading(state)
+        if (navbarChanged) this.renderNavbar(state)
     }
 
     private renderSidebar(state: State): void {
@@ -120,6 +127,10 @@ export class AppChatView extends HTMLElement {
             this.messagesElement.appendChild(this.createMessageEl(activeConversation.messages[i]))
         }
         if (hadNewMessages) this.scrollToBottom()
+    }
+
+    private renderNavbar(state: State): void {
+        this.navbarElement.setAuthenticated(state.user !== null)
     }
 
     private renderLoading(state: State): void {
