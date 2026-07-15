@@ -1,0 +1,8 @@
+{
+    "name": "current_date_time",
+    "description": "Get current date and time in local timezone. Returns date, time, day of week, ISO format, and Unix timestamp.",
+    "color": "linear-gradient(rgb(117,118,129), rgb(230,10,250))",
+    "iconSrc": "https://raw.githubusercontent.com/gilbarbara/logos/main/logos/javascript.svg",
+    "schema": "[]",
+    "func": "const now = new Date();\n\n// Format date as YYYY-MM-DD\nconst date = now.toISOString().split('T')[0];\n\n// Get time in HH:MM:SS format\nconst time = now.toTimeString().split(' ')[0];\n\n// Get day of week\nconst days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];\nconst day = days[now.getDay()];\n\n// Get timezone information (LOCAL timezone)\nconst timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;\nconst timezoneOffset = now.getTimezoneOffset();\nconst timezoneOffsetHours = Math.abs(Math.floor(timezoneOffset / 60));\nconst timezoneOffsetMinutes = Math.abs(timezoneOffset % 60);\nconst timezoneOffsetFormatted = \n    (timezoneOffset <= 0 ? '+' : '-') +\n    timezoneOffsetHours.toString().padStart(2, '0') + ':' +\n    timezoneOffsetMinutes.toString().padStart(2, '0');\n\nreturn {\n    date,\n    time,\n    day,\n    timezone,\n    timezoneOffset: timezoneOffsetFormatted,\n    iso8601: now.toISOString(),\n    unix_timestamp: Math.floor(now.getTime() / 1000),\n    formatted: `${day}, ${date} at ${time} (${timezone})`\n};\n"
+}
